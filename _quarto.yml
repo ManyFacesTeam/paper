@@ -1,0 +1,24 @@
+project:
+  type: manuscript
+  output-dir: docs
+
+manuscript:
+  article: index.qmd
+
+format:
+  html:
+    comments:
+      hypothesis: true
+    df-print: paged
+  #   toc: true
+  #   toc-depth: 4
+  # docx: default
+  # jats: default
+  # pdf: default
+
+execute:
+  freeze: false
+  echo: false
+
+number-sections: true
+
