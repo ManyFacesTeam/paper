@@ -43,6 +43,16 @@ bibliography: references.bib
 #| include: false
 
 library(tidyverse)
+
+# Rating data
+data_exp <- read_csv("data/manyfaces-pilot-exp_cleaned.csv",
+                     show_col_types = FALSE)
+
+# Questionnaire data
+data_qu <- read_csv("data/manyfaces-pilot-quest_cleaned.csv",
+                    show_col_types = FALSE)
+
+theme_set(theme_bw(base_size = 14))
 ```
 
 ## Introduction
@@ -300,7 +310,12 @@ We collected the following demographic data from our raters (N = 1676 of 1899 pr
 #| label: fig-gender-age
 #| fig-cap: Histogram of rater age, separated by gender
 
-ggplot()
+data_qu |> 
+  ggplot(aes(x = age, fill = gender)) +
+  geom_histogram(binwidth = 1) +
+  scale_fill_manual(values = c("hotpink", "dodgerblue", "darkorchid", "gray")) +
+  guides(fill  = guide_legend(position = "inside")) +
+  theme(legend.position.inside = c(.7, .7))
 ```
 
 
