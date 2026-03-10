@@ -183,7 +183,7 @@ For both studies/phases, the University of Glasgow provided ethical approval. We
 
 The team curated a set of equipment and developed a protocol for collecting standardized, reproducible images of faces for research. Following a survey among the ManyFaces members^[A call to join the consortium was initially disseminated over social media, followed by an initial meeting with members to determine the general direction of the group and potential future projects. We then developed a webpage to enable more people to join and set up a network of communication to discuss and prioritise projects.], we constructed the protocol for the collection of a variety of images that would be useful for a broad variety of research questions. Specifically, we included images varying in their standardization of appearance (standardized and unstandardized, e.g., white t-shirt and hair pulled back vs. clothing and hair as worn by the participant/model on that day), viewing angle (frontal, profile, ¾), and facial expression (neutral, natural, angry, disgusted, fearful, happy, sad, surprised).
 
-Prior to beginning data collection, the ManyFaces team pre-tested the protocol to ensure clarity of instructions and consistency of images collected across sites. We revised the protocol to address issues that arose (e.g., revised facial expression elicitation instructions, clarified camera settings). The final protocol can be found at [https://docs.google.com/document/d/1D9TPGXCgTRZi7nqEIg6jb42R4gNQx9L3qasg8tFvu1I/edit?usp=sharing<!--to add to OSF-->] (note that this is a living document that may be updated in future). In sum, the protocol detailed the following:
+Prior to beginning data collection, the ManyFaces team pre-tested the protocol to ensure clarity of instructions and consistency of images collected across sites. We revised the protocol to address issues that arose (e.g., revised facial expression elicitation instructions, clarified camera settings). The final protocol can be found on the OSF (<https://osf.io/qxwvz>; see also <https://osf.io/nkahx> for all materials). In sum, the protocol detailed the following:
 
 
 ##### Image Types 
@@ -244,7 +244,7 @@ mean_mps <- mean(models_per_site) |> round(1)
 
 Following the protocol, `r lab_n` labs (1 in Austria, 2 in Brazil, 2 in Canada, 2 in Germany, 1 in Israel, 3 in Malaysia, 1 in Mexico, 1 in the Netherlands, 1 in Serbia, 4 in the UK, and 2 in the US) collected images of an average of `r mean_mps` models per site. As specified by the protocol, researchers collected multiple images of each model, within the time constraints of the study session.
 
-Models furthermore completed a demographic questionnaire [LINK] <!-- PDF is here, add to OSF: https://drive.google.com/file/d/1EkX4jCkwpFb-Cwi9yWge_JrNbus5re6W/view*--> Experimentum, reporting their age, gender, ethnicity, height, and weight. They also reported whether or not they were wearing makeup (specifying what kinds, e.g., foundation, eye makeup, semi-permanent makeup) and whether they had ever experienced anything that could affect the shape of their face (e.g., broken nose, cosmetic surgery or injections, orthodontic work) and specified this if they were willing. Finally, they completed a debriefing questionnaire [LINK] <!-- PDF is here, add to OSF: https://drive.google.com/file/d/1XFlAdcMZAEcC1NGIJeaOHbx3BYPwzYqn/view*--> asking them about their experience of posing for the images (e.g., whether instructions were clear, whether any part of the process was uncomfortable).
+Models furthermore completed a demographic questionnaire (<https://osf.io/7w5du/files/q3p7d>) on Experimentum, reporting their age, gender, ethnicity, height, and weight. They also reported whether or not they were wearing makeup (specifying what kinds, e.g., foundation, eye makeup, semi-permanent makeup) and whether they had ever experienced anything that could affect the shape of their face (e.g., broken nose, cosmetic surgery or injections, orthodontic work) and specified this if they were willing. Finally, they completed a debriefing questionnaire <https://osf.io/7w5du/files/26b8c>) asking them about their experience of posing for the images (e.g., whether instructions were clear, whether any part of the process was uncomfortable).
 
 ### Results
 
@@ -255,7 +255,7 @@ model_n <- nrow(data_models)
 ```
 
 
-`r model_n` total models provided their images, following withdrawals and exclusions for poor image quality. @tbl-images-per-type details the number of models for each kind of photo. Example images are shown in @fig-img-examples. Images are available for research use and can be requested here: [link] <!--add: link to where the images can be requested--> Note that images cannot be shared without submitting a request and completing a research use agreement, in line with ethical constraints.
+`r model_n` total models provided their images, following withdrawals and exclusions for poor image quality. @tbl-images-per-type details the number of models for each kind of photo. Example images are shown in @fig-img-examples. Images are available for research use and can be requested here: [link to be added] <!--add: link to where the images can be requested--> Note that images cannot be shared without submitting a request and completing a research use agreement, in line with ethical constraints.
 
 ```{r}
 #| label: tbl-images-per-type
@@ -355,7 +355,7 @@ We next obtained perceptions/ratings of a subset of the photos (front-facing) to
 #### Image Processing
 <!--move this section to phase 1?-->
 
-RAW images were processed using webmorphR [@debruine_reproducible_2022], which facilitates scriptable processing of images using imagemagick [@imagemagick]; a full script of the processing steps is available at [REPO <!--add link-->]. Briefly, 
+RAW images were processed using webmorphR [@debruine_reproducible_2022], which facilitates scriptable processing of images using imagemagick [@imagemagick] (a full script of the processing steps is available at <https://github.com/ManyFacesTeam/imgprep>). Briefly, 
 
 * Each face was delineated using the Face++ automatic face detection algorithm (see <https://www.faceplusplus.com/>) to generate a 106-point template.
 * All images were resized to 1000w by 1500h pixels to standardise size (two different RAW formats were used, which resulted in two different image sizes)
@@ -404,7 +404,6 @@ knitr::include_graphics("fig/stim-types.png")
 Additionally, we created stimuli for attention checks. These were white images with the same size and aspect ratio as the face stimuli, but contained only the written instruction to choose a specific response, (e.g., ‘Choose "fear"’ or ‘Choose "3"’). 
 
 #### Measures
-<!--can put screenshots of example trials from experimentum on OSF-->
 
 ##### Standardised Neutral Faces
 
@@ -437,9 +436,9 @@ We obtained ratings of how intensely faces expressed each intended emotion (‘H
 
 #### Procedure
 
-We collected ratings via Experimentum [@debruine_experimentum_2020]; structure files for the exact experimental setup are available at [REPO]<!--add link-->. After a brief introduction to the study and online informed consent, each participant (rater) was randomly allocated to one of the ratings (e.g., rating all 205 standardised neutral faces on how memorable they look). All available faces were displayed one at a time, in a randomised order for each rater. The question/prompt and response scale remained visible at the top of the screen, above the photo throughout the study. The study automatically progressed to the next trial once the rater responded by clicking on the response scale. There was no time limit to provide a response. We included seven attention checks embedded in the study, which directed raters to provide a specific response.
+We collected ratings via Experimentum [@debruine_experimentum_2020]; a structure file for the exact experimental setup is available on the OSF (<https://osf.io/7w5du/files/zc2b3>). After a brief introduction to the study and online informed consent, each participant (rater) was randomly allocated to one of the ratings (e.g., rating all 205 standardised neutral faces on how memorable they look). All available faces were displayed one at a time, in a randomised order for each rater. The question/prompt and response scale remained visible at the top of the screen, above the photo throughout the study. The study automatically progressed to the next trial once the rater responded by clicking on the response scale. There was no time limit to provide a response. We included seven attention checks embedded in the study, which directed raters to provide a specific response.
 
-Following rating or categorising all stimuli, raters self-reported their gender, age, race/ethnicity, country of residence, and device type used for the study (desktop, laptop, tablet, mobile)<!--add doc to OSF-->. They also completed an honesty/attention check question, asking them if they engaged with the study seriously, with assurance of payment regardless of response (choosing from ‘no, I was not really paying attention’ and ‘yes, I tried to give my authentic first impressions’). 
+Following rating or categorising all stimuli, raters self-reported their gender, age, race/ethnicity, country of residence, and device type used for the study (desktop, laptop, tablet, mobile). They also completed an honesty/attention check question, asking them if they engaged with the study seriously, with assurance of payment regardless of response (choosing from ‘no, I was not really paying attention’ and ‘yes, I tried to give my authentic first impressions’). 
 
 
 We recruited fluent English-speaking raters through Prolific <!--add prolific inclusion/exclusion criteria-->. We collected all data in May 2025^[This was slightly later than preregistered, due to pretesting and study setup delays.].
@@ -517,7 +516,7 @@ data_exp |>
   flextable::width(j = 1, 2)
 ```
 
-Anonymous data are available on the OSF: [LINK] <!--[add link-->
+Anonymous data are available on Github (<https://github.com/ManyFacesTeam/pilot-ratings>).
  
 #### Rater Demographics
 
