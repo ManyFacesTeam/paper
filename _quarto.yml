@@ -10,8 +10,9 @@ format:
     comments:
       hypothesis: true
     df-print: paged
-  #   toc: true
-  #   toc-depth: 4
+    toc: true
+    toc-depth: 5
+    toc-expand: 4
   # docx: default
   # jats: default
   # pdf: default
