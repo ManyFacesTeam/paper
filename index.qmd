@@ -33,6 +33,14 @@ authors:
     - Validation 
     - Visualization 
     - Writing - original draft 
+  - name: Iris Holzleitner
+    affiliation: UWE Bristol
+    orcid: 0000-0002-1581-597X
+    email: Iris.Holzleitner@uwe.ac.uk
+    roles: 
+    - Analysis
+    - Visualization 
+    - Writing - original draft 
 bibliography: references.bib
 csl: apa.csl
 ---
@@ -44,26 +52,90 @@ csl: apa.csl
 #| label: setup
 #| include: false
 
+library(psych) # ICC, alpha, omega
+library(furrr) # run code parallel
 library(tidyverse)
+library(flextable)
 #devtools::install_github("debruine/webmorphR@dev")
-library(webmorphR)
+#library(webmorphR)
 
-# Rating data
+set_flextable_defaults(digits = 2)
+theme_set(theme_bw(base_size = 14))
+
+source("code/custom_functions.R")
+source("code/1_dataprep.R")
+source("code/2_agreement.R")
+```
+
+```{r}
+# prep variables to be used later
+
+exp_levels_neutral <- c("attractive", "trustworthy", "dominant", 
+                        "memorable", "gender-typical")
+
+exp_levels_neutral_unstd <- c("attractive (unstd)", "trustworthy (unstd)",
+                              "dominant (unstd)")
+
+exp_levels_emo_cat <- c("emotion 1", "emotion 2", "emotion 3", 
+                        "emotion 4", "emotion 5", "emotion 6")
+
+exp_levels_emo_int <- c("anger", "disgust", "fear",
+                        "happiness", "sadness", "surprise")
+
+rainbow <- c("firebrick", "darkorange", "goldenrod",
+             "darkgreen", "dodgerblue3", "darkorchid4")
+```
+
+```{r eval=FALSE}
+# OLD CHUNK -- KEEP FOR NOW WHILE I'M UPDATING, DELETE ONCE FINISHED
+# read in main data used
+
+# Model data
+ct <- cols(
+  age = col_integer(),
+  height = col_integer(),
+  weight = col_integer(),
+  ethnicity_rec = col_factor(levels = c("White", "Black", "Asian", "Indigenous", "MENA", "Latine", "Mixed", "Ambiguous label"), include_na = TRUE)
+)
 data_models <- read_csv("data/manyfaces-pilot-models_cleaned.csv",
-                     show_col_types = FALSE)
+                        col_types = ct)
 
-# Rating data
+# Rating data (post exclusions)
+exp_levels <- c("attractive", 
+                "dominant", 
+                "trustworthy", 
+                "attractive (unstd)", 
+                "dominant (unstd)", 
+                "trustworthy (unstd)",
+                "memorable",
+                "gender-typical",
+                "age",
+                "anger",
+                "disgust", 
+                "fear", 
+                "happiness", 
+                "sadness", 
+                "surprise",
+                "emotion 1", 
+                "emotion 2", 
+                "emotion 3", 
+                "emotion 4", 
+                "emotion 5", 
+                "emotion 6"
+              )
+ct <- cols(
+  exp = col_factor(levels = exp_levels)
+)
 data_exp <- read_csv("data/manyfaces-pilot-exp_cleaned.csv",
-                     show_col_types = FALSE)
+                     col_types = ct)
 
-# Questionnaire data
+# Questionnaire data (post exclusions)
 data_qu <- read_csv("data/manyfaces-pilot-quest_cleaned.csv",
                     show_col_types = FALSE)
 
+# Exclusions
 data_excl <- read_csv("data/exclusions.csv",
                     show_col_types = FALSE)
-
-theme_set(theme_bw(base_size = 14))
 ```
 
 ## Introduction
@@ -197,7 +269,7 @@ emo_levels <- c(neu = "neutral",
                 sad = "sad", 
                 sur = "surprised")
 
-data_models |>
+image_type_n <- data_models |>
   select(model_id:unstd_neu) |>
   pivot_longer(std_ang:unstd_neu) |>
   filter(value == 1) |>
@@ -206,23 +278,71 @@ data_models |>
   pivot_wider(names_from = type, values_from = n) |>
   mutate(emotion = factor(emotion, names(emo_levels), emo_levels)) |>
   arrange(emotion)
+
+image_type_n |>
+  flextable()
 ```
 
 ```{r}
 #| label: fig-img-examples
 #| fig-cap: Example images of each level of standardisation, angle, and expression
+#| fig-alt: "A 7x6 grid of pictures of a woman in a white t-shirt with a white headband, showing different angles and expressions. Top labels: neutral, anger, disgust, fear, happy, sad, surprised. Side labels: standardised front, standardised left 90 (side profile), standardised left 45 (three-quarter profile), standardised right 45, standardised right 90, unstandardised front."
 
-ggplot()
+knitr::include_graphics("fig/img-examples.png")
 ```
 
+
 #### Model Demographics
-For data cleaning, we first downloaded and reshaped the raw data from Experimentum. In the next step, we ensured that the models’ gender, race/ethnicity, and units of height and weight were consistently formatted across labs. For gender and race/ethnicity, words presented in languages other than English were recoded to be presented in English (e.g., “mulher” to “female”, “preta” to “Black”). We then classified self-described race/ethnicity into one of seven categories (“White”, “Black”, “Asian”, “Indigenous”, “MENA” (Middle Eastern or North African), “Latine”, or “Mixed”), where possible. Descriptions that could not be clearly sorted into these categories were given “Ambiguous label” (non-entries were recoded as NA). For height, we ensured all data were presented in centimeters, and for weight, we ensured that all data were presented in kilograms. Models could report height and weight in metric or imperial units, so we converted from imperial to metric where required. We also sanity-checked the reported units, assuming heights > 100 to be in centimeters and those < 100 to be in inches, and weights < 80 to be in kilograms. Any non-entries of height or weight for a model was recoded as NA .
+
+```{r}
+# count faces per ethnicity category
+eth_rec <- count(data_models, ethnicity_rec, .drop = FALSE)
+eth_n <- as.list(eth_rec$n)
+names(eth_n) <- c(as.character(eth_rec$ethnicity_rec[1:7]), "NA")
+```
+
+
+For data cleaning, we first downloaded and reshaped the raw data from Experimentum. In the next step, we ensured that the models’ gender, race/ethnicity, and units of height and weight were consistently formatted across labs. 
+
+For gender and race/ethnicity, words presented in languages other than English were recoded to be presented in English (e.g., “mulher” to “female”, “preta” to “Black”). We then classified self-described race/ethnicity into one of seven categories (“White” (n = `r eth_n$White`), “Black” (n = `r eth_n$Black`), “Asian” (n = `r eth_n$Asian`), “Indigenous” (n = `r eth_n$Indigenous`), “MENA” (n = `r eth_n$MENA`) (Middle Eastern or North African), “Latine” (n = `r eth_n$Latine`), or “Mixed” (n = `r eth_n$Mixed`)), where possible. Descriptions that could not be clearly sorted into these categories were given “Ambiguous label” (n = `r eth_n[["Ambiguous label"]]`) and non-entries were recoded as NA (n = `r eth_n[["NA"]]`). 
+
+For height, we ensured all data were presented in centimeters, and for weight, we ensured that all data were presented in kilograms. Models could report height and weight in metric or imperial units, so we converted from imperial to metric where required. We also sanity-checked the reported units, assuming heights > 100 to be in centimeters and those < 100 to be in inches, and weights < 80 to be in kilograms. Any non-entries of height or weight for a model was recoded as NA .
 
 ```{r}
 #| label: tbl-model-demog
 #| tbl-cap: Summary of model demographic info
 
-data.frame(a = 1:5)
+data_models |>
+  mutate(gender = gender_rec) |>
+  summarise(
+    .by = gender,
+    n = n(),
+    age_min = min(age, na.rm = TRUE),
+    age_max = max(age, na.rm = TRUE),
+    age_mean = mean(age, na.rm = TRUE),
+    height_min = min(height_cm, na.rm = TRUE),
+    height_max = max(height_cm, na.rm = TRUE),
+    height_mean = mean(height_cm, na.rm = TRUE),
+    weight_min = min(weight_kg, na.rm = TRUE),
+    weight_max = max(weight_kg, na.rm = TRUE),
+    weight_mean = mean(weight_kg, na.rm = TRUE)
+  ) |>
+  flextable() |>
+  add_header_row(values = c("", "Age (years)", "Height (cm)", "Weight (kg)"),
+                colwidths = c(2, 3, 3, 3)) |>
+  set_header_labels(age_min = "min", 
+                    age_max = "max",
+                    age_mean = "mean",
+                    height_min = "min", 
+                    height_max = "max",
+                    height_mean = "mean",
+                    weight_min = "min", 
+                    weight_max = "max",
+                    weight_mean = "mean") |>
+  colformat_char(j = 1, na_str = "missing") |>
+  colformat_double(digits = 1) |>
+  flextable::width(j = 1, width = 1)
+          
 ```
 
 
@@ -251,22 +371,31 @@ RAW images were processed using webmorphR [@debruine_reproducible_2022], which f
 
 ```{r}
 #| label: fig-img-processing
-#| fig-cap: Visualise some steps of this with a delineated original, aligned version, and white balanced version.
+#| fig-cap: "Image processing steps: (A) the raw image, (B) the image automatically delineated and cropped to a standard alignment, (C) white balance correction."
 
-ggplot()
+knitr::include_graphics("fig/img-processing.png")
 ```
 
 
 #### Stimuli
 
-The number of stimuli was determined by the number of models recruited across the 20 research labs and how many models posed for each image type. The maximum number of targets per image type was 205^[The preregistration mis-stated the total number of models, rather than the maximum number of images, to be 205. The total number of models was 211], meaning each rater saw up to 205 stimuli. We obtained ratings of the front-facing standardised neutral (n = 205), unstandardised neutral (n = 188), standardised angry (n = 187), standardised disgusted (n = 184), standardised fearful (n = 175), standardised happy (n = 199), standardised sad (n = 183), and standardised surprised (n = 184).
+```{r}
+# count images for each emotion and unstandardised
+emo_n <- as.list(image_type_n$std)
+names(emo_n) <- image_type_n$emotion
+unstd <- image_type_n$unstd[[1]]
+```
+
+
+The number of stimuli was determined by the number of models recruited across the 20 research labs and how many models posed for each image type. The maximum number of targets per image type was 205^[The preregistration mis-stated the total number of models, rather than the maximum number of images, to be 205. The total number of models was 211], meaning each rater saw up to 205 stimuli. We obtained ratings of the front-facing standardised neutral (n = `r emo_n$neutral`), unstandardised neutral (n = `r unstd`), standardised angry (n = `r emo_n$anger`), standardised disgusted (n = `r emo_n$digust`), standardised fearful (n = `r emo_n$fear`), standardised happy (n = `r emo_n$happy`), standardised sad (n = `r emo_n$sad`), and standardised surprised (n = `r emo_n$surprised`).
 
 
 ```{r}
 #| label: fig-stim-examples
-#| fig-cap: An example of each stimulus (could incorporate the N table)
+#| fig-cap: An example of each type of stimulus, with the total number of stimuli of that type in parentheses.
+#| fig-alt: "Example face images for the 8 types of stimuli: unstandardised (177), neutral (205), anger (187), disgust (184), fear (175), happy (199), sad (183), surprised (184)"
 
-ggplot()
+knitr::include_graphics("fig/stim-types.png")
 ```
 
 
@@ -318,7 +447,7 @@ We recruited fluent English-speaking raters through Prolific <!--add prolific in
 
 #### Participants
 
-We aimed to collect 100 raters per rating condition to achieve stable averages and allow for exclusions [@hehman_assessing_2025], totalling 2100 raters. Altogether, 2115 raters completed the study. See Results for exclusions and demographics of the final sample.
+We aimed to collect 100 raters per rating condition to achieve stable averages and allow for exclusions [@hehman_assessing_2025], totalling 2100 raters. Altogether, `r initial_raters` raters completed the study. See Results for exclusions and demographics of the final sample.
 
 ### Results
 
@@ -326,9 +455,9 @@ We aimed to collect 100 raters per rating condition to achieve stable averages a
 
 In the raters’ demographic questionnaire, we standardized participants’ recording of their race/ethnicity similarly to the models’ by recoding their inputs into one of seven categories (“White”, “Black”, “Asian”, “Indigenous/Pacific Islander”, “MENA” (Middle Eastern or North African), “Latine”, or “Mixed”), or as  “Ambiguous label” when this was not possible. Any non-entries were recoded as NA. 
 
-A total of 2115 raters completed 2158 rating or categorisation tasks. We found that some raters did not complete all trials in tasks, some raters completed more than one task, and some raters completed more than the maximum number of trials in a task (likely by restarting the study or bypassing the back button block). Therefore, we removed incomplete tasks from our data, retained raters’ first complete tasks, and filtered our duplicate trials by keeping only raters’ first ratings for a duplicated trial. After these exclusions, and before implementing the pre-registered plan for data exclusions, we had complete and clean data from 1936 raters.
+A total of `r initial_raters` raters completed `r initial_completions` rating or categorisation tasks. We found that some raters did not complete all trials in tasks, some raters completed more than one task, and some raters completed more than the maximum number of trials in a task (likely by restarting the study or bypassing the back button block). Therefore, we removed incomplete tasks from our data, retained raters’ first complete tasks, and filtered our duplicate trials by keeping only raters’ first ratings for a duplicated trial. After these exclusions, and before implementing the pre-registered plan for data exclusions, we had complete and clean data from `r complete_raters` raters.
  
-Our pre-registered plan for data exclusions included removing raters who gave overly consistent responses, committed overly fast responses, self-reported not taking the study seriously when asked whether or not they completed the study authentically, and failed attention checks. In total, we excluded 49 raters for our pre-registered reasons for data exclusions. @tbl-exclusions shows the number of raters we excluded for each of our reasons. 
+Our pre-registered plan for data exclusions included removing raters who gave overly consistent responses, committed overly fast responses, self-reported not taking the study seriously when asked whether or not they completed the study authentically, and failed attention checks. In total, we excluded `r excluded_raters` raters for our pre-registered reasons for data exclusions. @tbl-exclusions shows the number of raters we excluded for each of our reasons. 
  
 
 ```{r}
@@ -336,43 +465,80 @@ Our pre-registered plan for data exclusions included removing raters who gave ov
 #| tbl-cap: The number of raters excluded from analysis.
 # tbl-subcap: Multiple raters met more than one exclusion criterion; therefore, the counts for individual criteria do not sum to the total number of raters excluded.
 
-data.frame(a = 1:5)
+exclusions |> 
+  summarise(
+    `Overly consistent` = sum(!is.na(same_pcnt)),
+    `Overly fast` = sum(!is.na(med_rt)),
+    `Failed honesty check` = sum(!is.na(honesty_check)),
+    `Failed attention checks` = sum(!is.na(attn_checks_passed)),
+    `Total` = n()
+  ) |> 
+  pivot_longer(
+    cols = everything(),
+    names_to = "Reason for exclusion",
+    values_to = "N"
+  ) |>
+  flextable() |>
+  flextable::width(j = 1, 2)
+
 ```
 
-We defined overly consistent responses as those raters who responded to at least 90% of the trials identically. We defined overly fast responses as those raters whose median reaction time fell below the 1st percentile of the overall distribution of median reaction times (see Figure 1 for the distribution of median reaction times). For our attention checks, the threshold for inclusion was to accurately complete six or more attention checks (i.e., participants were excluded if they failed more than one of the checks). After these exclusions, we had 1899 <!--update N--> raters in our sample (see @tbl-raters-per-task for the number of raters per task).
-
+We defined overly consistent responses as those raters who responded to at least 90% of trials identically. During agreement analyses (see Agreement Indicators for the Ratings), we found that `r additionally_excl` additional raters only gave two unique responses across all trials and also excluded these as overly consistent.  We defined overly fast responses as those raters whose median reaction time fell below the 1st percentile of the overall distribution of median reaction times (see Figure 1 for the distribution of median reaction times). For our attention checks, the threshold for inclusion was to accurately complete six or more attention checks (i.e., participants were excluded if they failed more than one of the checks). Lastly, participants were excluded based on a self-reported honesty check, i.e., if they reported not taking the study seriously rather than taking it authentically. After these exclusions, we had `r final_raters` raters in our sample (see @tbl-raters-per-task for the number of raters per task).
 
 ```{r}
 #| label: fig-rt-distribution
 #| fig-cap: Median reaction time distribution
 
-ggplot()
+med_rt |> 
+  ggplot(aes(x = med_rt)) +
+  geom_histogram(binwidth = 100, boundary = 0, fill = "dodgerblue") +
+  geom_vline(xintercept = quantile(med_rt$med_rt, probs = 0.01), 
+             color = "red", linetype = "dashed", linewidth = 1) +
+  coord_cartesian(xlim = c(0, 8000)) +
+  scale_x_continuous(expand = expansion(mult = 0)) +
+  labs(x = "Median RT (ms)",
+       y = "Count (per 100ms bin)")  +
+  theme_bw()
 ```
 
  
 ```{r}
 #| label: tbl-raters-per-task
-#| tbl-cap: Number of raters per task
+#| tbl-cap: Number of raters per task. The emotion rating task was broken into 6 counterbalanced versions.
 
-data.frame(a = 1:5)
+data_exp |>
+  summarise(.by = exp,
+            raters = unique(session_id) |> length()
+            ) |>
+  arrange(exp) |>
+  flextable() |>
+  set_header_labels(exp = "Rating Task",
+                    raters = "N") |>
+  flextable::width(j = 1, 2)
 ```
 
 Anonymous data are available on the OSF: [LINK] <!--[add link-->
  
 #### Rater Demographics
 
-We collected the following demographic data from our raters (N = 1676 of 1899<!--update N--> provided data): Age, gender, residence, ethnicity, and devices on which the ratings were completed. See @fig-gender-age and Tables 3-5 for demographic information.
+```{r}
+n_demog_provided <- data_quest$session_id |> unique() |> length()
+```
+
+
+We collected the following demographic data from our raters (N = `r n_demog_provided` provided data): Age, gender, residence, ethnicity, and devices on which the ratings were completed. See @fig-gender-age and Tables 3-5 for demographic information.
 
 ```{r}
 #| label: fig-gender-age
 #| fig-cap: Histogram of rater age, separated by gender
 
-data_qu |> 
+data_quest |> 
   ggplot(aes(x = age, fill = gender)) +
   geom_histogram(binwidth = 1) +
   scale_fill_manual(values = c("hotpink", "dodgerblue", "darkorchid", "gray")) +
   guides(fill  = guide_legend(position = "inside")) +
-  theme(legend.position.inside = c(.7, .7))
+  theme(legend.position.inside = c(.7, .7)) +
+  labs(x = "Age (years)", y = NULL)
 ```
 
 
@@ -380,103 +546,388 @@ data_qu |>
 #| label: tbl-raters-country
 #| tbl-cap: Rater country of residence
 
-data.frame(1:5)
+data_quest |> 
+  count(residence) |>
+  summarise(.by = n, res = paste(residence, collapse = ", ")) |>
+  arrange(desc(n)) |>
+  select(res, n) |>
+  flextable() |>
+  set_header_labels(res = "Country of Residence", n = "N") |>
+  flextable::width(j = 1, 2)
 ```
  
 ```{r}
 #| label: tbl-raters-eth
 #| tbl-cap: Rater race/ethnicity
 
-data.frame(1:5)
+data_quest |> 
+  count(ethnicity_rec) |>
+  arrange(desc(n)) |>
+  flextable() |>
+  colformat_char(na_str = "Missing") |>
+  set_header_labels(ethnicity_rec = "Ethnicity", n = "N") |>
+  flextable::width(j = 1, 2)
 ```
 
 ```{r}
 #| label: tbl-raters-dev
 #| tbl-cap: Devices used by raters to complete the study
 
-data.frame(1:5)
+data_quest |> 
+  count(device) |>
+  arrange(desc(n)) |>
+  flextable() |>
+  colformat_char(na_str = "missing") |>
+  set_header_labels(device = "Device Used", n = "N") |>
+  flextable::width(j = 1, 2)
 ```
 
 
 #### Agreement Indicators for the Ratings
 
+
 ##### Standardized Trait Ratings
 
-In the first step, we calculated intraclass correlations for traits observed across tasks for our standardized images. The number of raters ranged from 83 to 94 for these traits. The average reliability across raters was very good for rating attractiveness, dominance, trustworthiness, and gender-typicality, but poorer for rating memorability (see @tbl-std-neu-agree).
+```{r}
+icc_table <- data_trait |> 
+  group_by(exp) |> 
+  group_map(calc_icc) |> 
+  bind_rows() |>
+  rename(Rating = experiment,
+         N = n_raters,
+         ICC = 3,
+         lower = 4, 
+         upper = 5)
+
+s_n_min <- min(icc_table$N)
+s_n_max <- max(icc_table$N)
+```
+
+In the first step, we calculated intraclass correlation coefficients [ICC(2,k)] for ratings of standardized images. The number of raters ranged from `r s_n_min` to `r s_n_max` for each trait. The average reliability across raters was excellent for ratings of attractiveness, dominance, trustworthiness, and gender-typicality, but poorer for ratings of memorability (see @tbl-std-neu-icc).
 
 ```{r}
-#| label: tbl-std-neu-agree
-#| tbl-cap: Agreement for ratings of standardized neutral faces
-# tbl-subcap: ICCs values are ICC (2,k) values.
+#| label: tbl-std-neu-icc
+#| tbl-cap: Intraclass correlation coefficients for ratings of standardized neutral faces
 
-data.frame(1:5)
+icc_table |>
+  flextable() |>
+  colformat_double(digits = 2) |>
+  flextable::width(j = 1, 2) |>
+  add_header_row(values = c("", "95% CI"), colwidths = c(3, 2)) |>
+  align(i = 1, align = "center", part = "header")
 ```
 
  
-Next, we examined the number of raters required for trait ratings to reach stable levels of reliability defined as ICC (2,k) values of 0.75 and 0.90 (see Figure 3). Attractiveness ratings stabilized with the fewest participants, reaching an ICC (2,k) of 0.75 at approximately 18 raters. It was also the only trait to exceed an ICC (2,k) of 0.90, which occurred with 50 raters. Ratings for dominance, trustworthiness, and gender-typicality reached an ICC (2,k) of 0.75 with approximately 35-40 raters (see @fig-icc-cos).
-
+Next, we examined the number of raters required for trait ratings to reach stable levels of reliability defined as ICC(2,k) values of 0.75 (see Figure 3). Attractiveness ratings stabilized with the fewest participants, reaching a median ICC(2,k) of 0.75 at approximately `r n_075[["attractive"]]` raters. It was also the only trait to exceed a median ICC(2,k) of 0.90, which occurred with `r n_090[["attractive"]]` raters. Ratings for dominance, trustworthiness, and gender-typicality reached a median ICC(2,k) of 0.75 with `r n_075[["dominant"]]` raters (see @fig-icc-cos). 
 
 ```{r}
 #| label: fig-icc-cos
-#| fig-cap: Corridors of stability for ICCs
+#| fig-cap: Corridors of stability for ICC
+#| fig-subcap: Dashed horizontal lines indicate ICC(2,k) of 0.75 and 0.90, respectively.
 
-ggplot()
+icc2k_corridor_summary |> 
+  ggplot(aes(x = n_raters_sampled)) +
+  geom_ribbon(aes(ymin = ICC2_k_low, ymax = ICC2_k_high), 
+              alpha = 0.15, fill = "grey60") +
+  # Median ICC(2,k)
+  geom_line(aes(y = ICC2_k_median), linewidth = 0.8, colour = "black") +
+  # Thresholds: 0.75 grey, 0.9 black
+  geom_hline(yintercept = 0.75, linetype = "dashed", colour = "grey40") +
+  geom_hline(yintercept = 0.9, linetype = "dashed", colour = "black") +
+  geom_vline(data = thresholds_median_075 |> filter(!is.na(N_for_075_median)),
+             aes(xintercept = N_for_075_median), colour = "red", linetype = "dotted") +
+  geom_text(data = thresholds_median_075 |> filter(!is.na(N_for_075_median)),
+            aes(x = N_for_075_median, y = 0.60, label = paste0("N=", N_for_075_median)),
+            angle = 0, hjust = -0.2, vjust = 0,, colour = "red", size = 3) +
+  facet_wrap(~ experiment) +
+  scale_y_continuous(limits = c(0, 1)) +
+  labs(
+    x = "Number of raters sampled", 
+    y = "ICC(2,k)") +
+  scale_x_continuous(breaks = seq(10, 100, 10), labels = seq(10, 100, 10)) +
+  labs(x = "Number of raters sampled", y = "ICC(2,k)") +
+  theme_minimal(base_size = 12) +
+  theme(
+    strip.text = element_text(size = 12, face = "bold"),
+    axis.text = element_text(size = 11),
+    axis.title = element_text(size = 12),
+    plot.subtitle = element_text(size = 11)
+  )
 ```
 
- 
-For checking internal consistency of our ratings, we used both Cronbach’s alpha (α) and McDonald’s omega total (ωt) (see @tbl-std-neu-agree). For four of the five traits, both α and ωt exceeded 0.9, indicating excellent internal consistency. For the fifth trait (memorability), α was lower (0.65), indicating doubtful internal consistency when assuming equal item contributions (tau-equivalence) in the ratings. However, ωt for memorability was substantially higher (0.87), indicating good internal consistency after taking into account variance among item or rater contributions.
+```{r}
+#| warning: false
+#| message: false
+alpha_omega_table <- data_trait |> 
+  group_by(exp) |> 
+  group_map(purrr::partial(calc_alpha_omega)) |> 
+  bind_rows() |>
+  rename(Rating = experiment,
+         N = n_raters,
+         alpha = alpha,
+         omega = omega_t)
+
+mem <- filter(alpha_omega_table, Rating == "memorable")
+a_mem <- mem$alpha |> format(digits = 2)
+o_mem <- mem$omega |> format(digits = 2)
+``` 
+
+To further check inter-rater agreement, we used both Cronbach’s alpha (α) and McDonald’s omega total (ωt; see @tbl-std-neu-alpha-omega). For four of the five traits, both α and ωt exceeded 0.90, indicating excellent inter-rater agreement. For the fifth trait (memorability), α was lower (`r a_mem`), suggesting reduced inter-rater agreement. ωt for memorability was substantially higher (`r o_mem`), suggesting better agreement under the assumption that raters varied in how consistently they judged memorability, a pattern consistent with the lower ICC observed for this trait.
+
+```{r}
+#| label: tbl-std-neu-alpha-omega
+#| tbl-cap: Cronbach’s alpha and McDonald’s omega total for ratings of standardized neutral faces.
+
+alpha_omega_table |>
+  flextable() |>
+  colformat_double(digits = 2) |>
+  flextable::width(j = 1, 2)
+```
  
 ##### Unstandardized Trait Ratings
 
-As with our standardized trait ratings, but for three rather than five traits, we calculated intraclass correlations for ratings to our unstandardized images observed across rating tasks. The number of raters ranged from 84 to 95 for these traits. The The average reliability across raters was very good for all trait ratings (see @tbl-unstd-neu-agree). All three traits also demonstrated excellent internal consistency (see @tbl-unstd-neu-agree) with Cronbach’s alpha (α) ranging from 0.88 to 0.95 and McDonald’s omega total (ωt) ranging from 0.90 to 0.96.
+```{r}
+#| warning: false
+#| message: false
+
+icc_table_unstd <- data_trait_unstd |> 
+  group_by(exp) |> 
+  group_map(calc_icc, check_dropped_raters = FALSE) |> 
+  bind_rows() |>
+  rename(Rating = experiment,
+         N = n_raters,
+         ICC = 3,
+         lower = 4, 
+         upper = 5)
+
+u_n_min <- min(icc_table_unstd$N)
+u_n_max <- max(icc_table_unstd$N)
+
+alpha_omega_table_unstd <- data_trait_unstd |> 
+  group_by(exp) |> 
+  group_map(calc_alpha_omega) |> 
+  bind_rows() |>
+  rename(Rating = experiment,
+         N = n_raters,
+         alpha = alpha,
+         omega = omega_t)
+
+u_a_min <- min(alpha_omega_table_unstd$alpha) |> format(digits = 2)
+u_a_max <- max(alpha_omega_table_unstd$alpha) |> format(digits = 2)
+u_o_min <- min(alpha_omega_table_unstd$omega) |> format(digits = 2)
+u_o_max <- max(alpha_omega_table_unstd$omega) |> format(digits = 2)
+``` 
+
+As with standardized trait ratings, we calculated intraclass correlation coefficients for ratings of unstandardized images. The number of raters ranged from  `r u_n_min` to `r u_n_max`. Average inter-rater reliability was excellent for all three traits (see @tbl-unstd-neu-icc). This was further supported by Cronbach's α ranging from `r u_a_min` to `r u_a_max` and McDonald's ωt ranging from `r u_o_min` to `r u_o_max` (see @tbl-unstd-neu-alpha-omega).
 
 
 ```{r}
-#| label: tbl-unstd-neu-agree
+#| label: tbl-unstd-neu-icc
 #| tbl-cap: Agreement for ratings of unstandardized neutral faces
-# tbl-subcap: ICCs values are ICC (2,k) values.
 
-data.frame(1:5)
+icc_table_unstd |>
+  flextable() |>
+  colformat_double(digits = 2) |>
+  flextable::width(j = 1, 2) |>
+  add_header_row(values = c("", "95% CI"), colwidths = c(3, 2)) |>
+  align(i = 1, align = "center", part = "header")
 ```
  
- 
+
+```{r}
+#| label: tbl-unstd-neu-alpha-omega
+#| tbl-cap: Cronbach’s alpha and McDonald’s omega total for ratings of unstandardized neutral faces.
+
+alpha_omega_table_unstd |>
+  flextable() |>
+  colformat_double(digits = 2) |>
+  flextable::width(j = 1, 2)
+```
+
+
 ##### Emotion Intensity Ratings
 
-Next, we calculated the intraclass correlations and internal consistency metrics for our emotion intensity ratings. The number of raters ranged from 84 to 103 for our six emotions. The average reliability across raters was excellent for all of the emotions, with ICC (2,k) ranging from 0.95 to 0.98. Internal consistency was also excellent for all emotions in terms of Cronbach’s alpha (α = 0.97 to 0.99) and McDonald’s omega total (ωt = 0.97 to 0.99; see @tbl-emo-agree).
-
 ```{r}
-#| label: tbl-emo-agree
-#| tbl-cap: Agreement for ratings of emotional faces’ emotion intensity
-# tbl-subcap: ICCs values are ICC (2,k) values.
+#| warning: false
+#| message: false
+icc_table_emo <- data_emo_int |> 
+  group_by(exp) |> 
+  group_map(calc_icc) |> 
+  bind_rows() |>
+  rename(Rating = experiment,
+         N = n_raters,
+         ICC = 3,
+         lower = 4, 
+         upper = 5)
 
-data.frame(1:5)
+emo_n_min <- min(icc_table_emo$N)
+emo_n_max <- max(icc_table_emo$N)
+
+emo_icc_min <- min(icc_table_emo$ICC) |> format(digits = 2)
+emo_icc_max <- max(icc_table_emo$ICC) |> format(digits = 2)
+
+alpha_omega_table_emo <- data_emo_int |> 
+  group_by(exp) |> 
+  group_map(calc_alpha_omega) |> 
+  bind_rows() |>
+  rename(Rating = experiment,
+         N = n_raters,
+         alpha = alpha,
+         omega = omega_t)
+
+emo_a_min <- min(alpha_omega_table_emo$alpha) |> format(digits = 2)
+emo_a_max <- max(alpha_omega_table_emo$alpha) |> format(digits = 2)
+emo_o_min <- min(alpha_omega_table_emo$omega) |> format(digits = 2)
+emo_o_max <- max(alpha_omega_table_emo$omega) |> format(digits = 2)
 ```
 
+Next, we calculated intraclass correlation coefficients, Cronbach's α, and McDonald's ωt for emotion intensity ratings. The number of raters ranged from `r emo_n_min` to `r emo_n_max`. The average reliability across raters was excellent for all emotions, with ICC(2,k) ranging from `r emo_icc_min` to `r emo_icc_max`, Cronbach’s α ranging from `r emo_a_min` to `r `, and  McDonald's ωt ranging from `r emo_o_min` to `r emo_o_max` (see @tbl-emo-icc and @tbl-emo-alpha-omega).
 
+
+```{r}
+#| label: tbl-emo-icc
+#| tbl-cap: Intraclass correlation coefficients for ratings of emotional faces’ emotion intensity
+
+icc_table_emo |>
+  flextable() |>
+  colformat_double(digits = 2) |>
+  flextable::width(j = 1, 2) |>
+  add_header_row(values = c("", "95% CI"), colwidths = c(3, 2)) |>
+  align(i = 1, align = "center", part = "header")
+```
+
+```{r}
+#| label: tbl-emo-alpha-omega
+#| tbl-cap: Cronbach’s alpha and McDonald’s omega total for ratings of emotional faces’ emotion intensity
+
+alpha_omega_table_emo |>
+  flextable() |>
+  colformat_double(digits = 2) |>
+  flextable::width(j = 1, 2)
+```
  
 #### Points of Stability
 
-To determine the number of raters required for stable ratings, we computed the point of stability (Hehman et al., 2025). This approach estimates the smallest sample size at which mean ratings stabilize by exceeding a cosine similarity threshold of 0.5 with the full-sample mean. As shown in Figures 4-6, the ratings to the standardized images reached stability between 37 and 45 raters, the ratings to the unstandardized images reached stability between 37 and 42 raters, and the ratings for the emotion intensities reached stability between 29 and 50 raters.
+To determine the number of raters required for stable ratings, we computed the point of stability (POS; Hehman et al., 2018) <!--add reference-->, defined as the smallest sample size at which 95% of resampled means fall within a corridor of stability of ±0.5 points and do not again exceed it. As shown in Figures 4-6, the ratings of standardized images reached stability between 37 and 44 raters, the ratings of unstandardized images between 37 and 41 raters, and emotion intensity ratings of standardized emotional faces between 29 and 50 raters.
 
 ```{r}
 #| label: fig-std-neu-pos
 #| fig-cap: Points of stability for ratings of standardised neutral faces
 
-ggplot()
+stability_stats_traits$pos$label <- paste0("Point of stability\n(N = ", stability_stats_traits$pos$pos, ")")
+
+summary_ci_traits |> 
+  mutate(exp = factor(exp, exp_levels_neutral)) |>
+  ggplot(aes(x = sample_size)) +
+  geom_ribbon(aes(ymin = ll, ymax = ul, fill = exp),
+              alpha = 0.5) +
+  geom_vline(data = stability_stats_traits$pos,
+             aes(xintercept = pos),
+             colour = "black",
+             linetype = "solid",
+             linewidth = .75) +
+  geom_hline(yintercept = c(-0.5, 0.5),
+             linetype = "dashed",
+             colour = "grey30",
+             linewidth = 0.5) +
+  facet_wrap(~ exp) +
+  xlab("Sample size (N)") +
+  ylab("Centered mean ratings") +
+  scale_fill_manual(values = rainbow) +
+  theme_minimal() +
+  theme(panel.grid.major = element_line(colour = "#e8e8e8"),
+        panel.grid.minor = element_line(colour = "#e8e8e8"),
+        strip.text = element_text(size = 12, face = "bold"),
+        axis.text = element_text(size = 10),
+        axis.title = element_text(size = 12, face = "bold"),
+        legend.position = "none") +
+  geom_label(data = stability_stats_traits$pos,
+             aes(x = pos + 30, y = 1.6, label = label),
+             fill = NA,   
+             linewidth = 0,
+             colour = "black",    
+             size = 3.5,
+             inherit.aes = FALSE)
 ```
+
 
 ```{r}
 #| label: fig-unstd-neu-pos
 #| fig-cap: Points of stability for ratings of unstandardised neutral faces
 
-ggplot()
+stability_stats_traits_unstd$pos$label <- paste0("Point of stability\n(N = ", stability_stats_traits_unstd$pos$pos, ")")
+
+summary_ci_traits_unstd |> 
+  mutate(exp = factor(exp, exp_levels_neutral_unstd)) |>
+  ggplot(aes(x = sample_size)) +
+  geom_ribbon(aes(ymin = ll, ymax = ul, fill = exp),
+              alpha = 0.5) +
+  geom_vline(data = stability_stats_traits_unstd$pos,
+             aes(xintercept = pos),
+             colour = "black",
+             linetype = "solid",
+             linewidth = .75) +
+  geom_hline(yintercept = c(-0.5, 0.5),
+             linetype = "dashed",
+             colour = "grey30",
+             linewidth = 0.5) +
+  facet_wrap(~ exp) +
+  xlab("Sample size (N)") +
+  ylab("Centered mean ratings") +
+  scale_fill_manual(values = rainbow) +
+  theme_minimal() +
+  theme(panel.grid.major = element_line(colour = "#e8e8e8"),
+        panel.grid.minor = element_line(colour = "#e8e8e8"),
+        strip.text = element_text(size = 12, face = "bold"),
+        axis.text = element_text(size = 10),
+        axis.title = element_text(size = 12, face = "bold"),
+        legend.position = "none") +
+  geom_label(data = stability_stats_traits_unstd$pos,
+             aes(x = pos + 30, y = 1.6, label = label),
+             fill = NA,   
+             linewidth = 0,
+             colour = "black",    
+             size = 3.5,
+             inherit.aes = FALSE)
 ```
 
 ```{r}
 #| label: fig-emo-pos
 #| fig-cap: Points of stability for emotion intensity ratings of standardised emotional faces of each expression
 
-ggplot()
+stability_stats_emo_int$pos$label <- paste0("Point of stability\n(N = ", stability_stats_emo_int$pos$pos, ")")
+
+summary_ci_emo_int |> 
+  ggplot(aes(x = sample_size)) +
+  geom_ribbon(aes(ymin = ll, ymax = ul, fill = exp),
+              alpha = 0.5) +
+  geom_vline(data = stability_stats_emo_int$pos,
+             aes(xintercept = pos),
+             colour = "black",
+             linetype = "solid",
+             linewidth = .75) +
+  geom_hline(yintercept = c(-0.5, 0.5),
+             linetype = "dashed",
+             colour = "grey30",
+             linewidth = 0.5) +
+  facet_wrap(~ exp) +
+  xlab("Sample size (N)") +
+  ylab("Centered mean ratings") +
+  scale_fill_manual(values = rainbow) +
+  theme_minimal() +
+  theme(panel.grid.major = element_line(colour = "#e8e8e8"),
+        panel.grid.minor = element_line(colour = "#e8e8e8"),
+        strip.text = element_text(size = 12, face = "bold"),
+        axis.text = element_text(size = 10),
+        axis.title = element_text(size = 12, face = "bold"),
+        legend.position = "none") +
+  geom_label(data = stability_stats_emo_int$pos,
+             aes(x = pos + 30, y = 1.6, label = label),
+             fill = NA,   
+             linewidth = 0,
+             colour = "black",    
+             size = 3.5,
+             inherit.aes = FALSE)
 ```
 
  
@@ -489,17 +940,46 @@ In this section, we report the descriptive statistics for ratings of the neutral
 Trustworthiness, dominance, and memorability ratings were approximately normally distributed and showed similar patterns of central tendency and variance. In contrast, attractiveness ratings were somewhat right-skewed, reflected in a relatively lower mean, while gender-typicality ratings were left-skewed, with a relatively higher mean (see @tbl-std-neu-desc for descriptive statistics and @fig-std-neu-hist for rating distributions).
 
 ```{r}
+std_neutral <- data_exp |>
+  filter(exp %in% exp_levels_neutral) |>
+  mutate(dv = as.integer(dv),
+         exp = factor(exp, exp_levels_neutral)) |> 
+  separate_wider_delim(trial_name,
+                       delim = "_",
+                       names = c("lab_id", "model_id"),
+                       too_many = "drop")
+```
+
+```{r}
 #| label: tbl-std-neu-desc
 #| tbl-cap: Descriptive statistics for ratings of standardized neutral faces
 
-data.frame(1:5)
+std_neutral |>
+  summarise(N = n(),
+            mean_rating = mean(dv),
+            .by = c("exp", "lab_id", "model_id")) |> 
+  summarise(N = first(N),
+            M = mean(mean_rating),
+            SD = sd(mean_rating),
+            .by = "exp") |>
+  rename(Rating = exp) |>
+  flextable() |>
+  colformat_double(digits = 2) |>
+  flextable::width(j = 1, 2)
 ```
 
 ```{r}
 #| label: fig-std-neu-hist
 #| fig-cap: Histograms for ratings of standardized neutral faces
 
-ggplot()
+std_neutral |>
+  ggplot(aes(x = dv, fill = exp)) +
+  geom_histogram(binwidth = 1, show.legend = FALSE, color = "black") +
+  facet_wrap(~exp, ncol = 3, axes = "all_x", drop = FALSE) +
+  labs(x = NULL, y = NULL) +
+  scale_x_continuous(breaks = 1:7) +
+  scale_y_continuous(breaks = seq(0, 5000, 1000), labels = paste0(0:5, "K")) +
+  scale_fill_manual(values = rainbow, drop = FALSE)
 ```
 
  
@@ -511,25 +991,79 @@ A key aim of this study was to provide normative data for each face model in the
 The ratings for dominance were approximately normally distributed, whereas the ratings for attractiveness were slightly skewed right and the ratings for trustworthiness were slightly skewed left, each reflected in their relatively low and high mean ratings (see @tbl-unstd-neu-desc for descriptive statistics and @fig-unstd-neu-hist for rating distributions).
 
 ```{r}
+unstd_neutral <- data_exp |>
+  filter(exp %in% exp_levels_neutral_unstd) |>
+  mutate(dv = as.integer(dv),
+         exp = factor(exp, exp_levels_neutral_unstd)) |> 
+  separate_wider_delim(trial_name,
+                       delim = "_",
+                       names = c("lab_id", "model_id"),
+                       too_many = "drop")
+```
+
+```{r}
 #| label: tbl-unstd-neu-desc
 #| tbl-cap: Descriptive statistics for ratings of unstandardized neutral faces
 
-data.frame(1:5)
+unstd_neutral |>
+  summarise(N = n(),
+            mean_rating = mean(dv),
+            .by = c("exp", "lab_id", "model_id")) |> 
+  summarise(N = first(N),
+            M = mean(mean_rating),
+            SD = sd(mean_rating),
+            .by = "exp") |>
+  rename(Rating = exp) |>
+  flextable() |>
+  colformat_double(digits = 2) |>
+  flextable::width(j = 1, 2)
 ```
 
 ```{r}
 #| label: fig-unstd-neu-hist
 #| fig-cap: Histograms for ratings of unstandardized neutral faces
+#| fig-height: 2.5
+#| fig-width: 8
 
-ggplot()
+unstd_neutral |>
+  ggplot(aes(x = dv, fill = exp)) +
+  geom_histogram(binwidth = 1, show.legend = FALSE, color = "black") +
+  facet_wrap(~exp, ncol = 5, drop = FALSE) +
+  labs(x = NULL, y = NULL) +
+  scale_x_continuous(breaks = 1:7) +
+  scale_y_continuous(breaks = seq(0, 5000, 1000), labels = paste0(0:5, "K")) +
+  scale_fill_manual(values = rainbow, drop = FALSE)
 ```
 
  
 As with the ratings of the standardized images, we produced heatmaps for each of the three traits capturing between-model differences within a trait and within-model differences across the traits (see Appendix).
  
  
-##### Emotion Categorization and Intensity Ratings. 
+##### Emotion Categorization and Intensity Ratings
+
 Next, we explored raters’ emotion categorizations and perceived emotion intensity expressed by our models. Raters’ categorizations generally aligned with the models’ expression of emotion, with the greatest alignment was observed for expression of happiness, and the least for fear (@tbl-emo-desc, @fig-emo-freq). 
+
+```{r}
+emo_cat <- data_exp |>
+  filter(exp %in% exp_levels_emo_cat) |>
+  mutate(exp = factor(exp, exp_levels_emo_cat),
+         dv = factor(dv, levels = c("anger", "disgust", "fear", 
+                                    "happiness", "sadness", "surprise",
+                                    "other"))) |> 
+  separate_wider_delim(trial_name,
+                       delim = "_",
+                       names = c("lab_id", "model_id", NA, "model_expression", NA),
+                       too_many = "drop") |> 
+  mutate(model_expression = forcats::fct_recode(
+    model_expression,
+    anger = "ang",
+    disgust = "dis",
+    fear = "fea",
+    happiness = "hap",
+    sadness = "sad",
+    surprise = "sur"
+  ))
+```
 
 
 ```{r}
@@ -537,7 +1071,21 @@ Next, we explored raters’ emotion categorizations and perceived emotion intens
 #| tbl-cap: Emotion categorisation proportions
 # tbl-subcap: Note. Italicised values indicate correct categorisations (categorisations matching intended model expression).
 
-data.frame(1:5)
+emo_cat |> 
+  group_by(model_expression) |> 
+  count(model_expression, dv) |> 
+  mutate(prop = n / sum(n)) |>
+  ungroup() |> 
+  dplyr::select(-n) |> 
+  pivot_wider(names_from = dv,
+              values_from = prop) |> 
+  relocate(other, .after = surprise) |>
+  rename("Actual Model Expression" = model_expression) |>
+  flextable() |>
+  colformat_double(digits = 2) |>
+  flextable::width(j = 1, 2) |>
+  add_header_row(values = c("", "Rated Expression"), colwidths = c(1, 7)) |>
+  align(i = 1, align = "center", part = "header")
 ```
 
 
@@ -546,24 +1094,73 @@ data.frame(1:5)
 #| fig-cap: Emotion categorisation frequencies
 #| fig-subcap: Downward arrows indicate correct categorisations (categorisations matching intended model expression). A=anger, D=disgust, F=fear, H=happiness, S=sadness, U=surprise, O=other
 
-ggplot()
+emo_levels <- levels(emo_cat$model_expression)
+emo_labels <- paste(emo_levels, "faces")
+
+emo_cat |>
+  mutate(emo = factor(model_expression, emo_levels, emo_labels)) |>
+  ggplot(aes(x = dv, fill = dv)) +
+  geom_point(aes(x = x, colour = I(fill), fill = I(fill)), 
+             data.frame(emo = factor(emo_levels, emo_levels, emo_labels),
+                        x = 1:6,
+                        fill = rainbow),
+             size = 6.5, y = -60, shape = 18, show.legend = FALSE) +
+  geom_bar(color = "transparent") +
+  facet_wrap(~emo, axes = "all_x", drop = FALSE) +
+  scale_x_discrete(labels = c("A", "D", "F", "H", "S", "U", "O")) +
+  scale_y_continuous(breaks = seq(0, 15000, 5000), labels = paste0(c(0, 5, 10, 15), "K")) +
+  scale_fill_manual(values = c(rainbow, "grey"), drop = FALSE) +
+  labs(x = NULL, y = NULL,
+       fill = "Categorised as") +
+  coord_cartesian(clip = "off") +
+  theme(axis.ticks.x = element_blank())
 ```
 
 
 Next, we calculated the average ratings of emotion intensity for each emotion (@tbl-intensity-desc). These ratings were very similar, on average, between the different emotions except for happiness, which was rated with greater intensity than all other emotions. On average, these ratings were located around the middle of the 7-point scale. @fig-intensity-hist shows the distribution of ratings on the scale for each emotion.
 
 ```{r}
+emo_int <- data_exp |>
+  filter(exp %in% exp_levels_emo_int) |>
+  mutate(dv = as.integer(dv),
+         exp = factor(exp, exp_levels_emo_int)) |> 
+  separate_wider_delim(trial_name,
+                       delim = "_",
+                       names = c("lab_id", "model_id"),
+                       too_many = "drop")
+```
+
+```{r}
 #| label: tbl-intensity-desc
 #| tbl-cap: Descriptive statistics for emotion intensity ratings
 
-data.frame(1:5)
+emo_int |>
+  summarise(N = n(),
+            mean_rating = mean(dv),
+            .by = c("exp", "lab_id", "model_id")) |> 
+  summarise(N = first(N),
+            M = mean(mean_rating),
+            SD = sd(mean_rating),
+            .by = "exp") |>
+  arrange(exp) |>
+  rename(Rating = exp) |>
+  flextable() |>
+  colformat_double(digits = 2) |>
+  flextable::width(j = 1, 2)
 ```
 
 ```{r}
 #| label: fig-intensity-hist
 #| fig-cap: Histograms of emotion intensity ratings
 
-ggplot()
+emo_int |>
+  ggplot(aes(x = dv, fill = exp)) +
+  geom_histogram(binwidth = 1, show.legend = FALSE, color = "black") +
+  facet_wrap(~exp, ncol = 3, axes = "all_x", drop = FALSE) +
+  scale_y_continuous(breaks = seq(0, 5000, 1000), labels = paste0(0:5, "K")) +
+  labs(x = NULL, y = NULL) +
+  scale_fill_manual(values = rainbow, drop = FALSE) +
+  scale_x_continuous(breaks = 1:7)
 ```
 
 
@@ -573,32 +1170,81 @@ ggplot()
 The distribution of raters’ perceptions of models’ ages is shown in @fig-age-hist. 26-30 years was the most-chosen age across raters and models. The correlation between models’ mode perceived age and actual age appears in @fig-age-corr, and heatmaps of perceived age for each model appear in the Appendix.
 
 ```{r}
-#| label: fig-age-hist
-#| fig-cap: Histogram of perceived age
+dv_levels <- seq(20, 85, 5)
+dv_labels <- paste(dv_levels-4, "-", dv_levels )
+dv_labels[14] <- "81+"
 
-ggplot()
+age <- data_exp |>
+  filter(exp == "age") |>
+  mutate(dv = factor(dv, dv_levels, dv_labels)) |> 
+  separate_wider_delim(trial_name,
+                       delim = "_",
+                       names = c("lab_id", "model_id"),
+                       too_many = "drop")
 ```
 
+```{r}
+#| label: fig-age-hist
+#| fig-cap: Histogram of perceived age
+#| fig-width: 10
+#| fig-height: 5
+
+age |>
+  ggplot(aes(x = dv)) +
+  geom_bar(color = "black", fill = "gray") +
+  scale_x_discrete(drop = FALSE) +
+  scale_y_continuous(breaks = seq(0, 5000, 1000), labels = paste0(0:5, "K")) +
+  labs(x = "Age Categories (in years)", y = NULL)
+```
+
+
+```{r}
+# Save modal age for each face
+age_modes <- age |>
+  group_by(lab_id, model_id) |>
+  summarise(out = list(get_mode_info(dv)),
+            .groups = "drop") |>
+  unnest_wider(out)
+
+age_perc <- age_modes |> 
+  mutate(age_mid = age_mode) |> 
+  separate(age_mid, into = c("age_start", "age_end"), sep = "-", convert = TRUE) |> 
+  mutate(age_perc = (age_start + age_end) / 2) |> 
+  select(-age_start, -age_end)
+
+age_by_face <- data_models |> 
+  dplyr::select(lab_id, model_id, age) |> 
+  rename(age_actual = age) |> 
+  left_join(age_perc, by = c("lab_id", "model_id"))
+
+# Get stats
+age_by_face_cortest <- cor.test(age_by_face$age_actual, age_by_face$age_perc)
+age_by_face_r <- age_by_face_cortest$estimate
+age_by_face_p <- age_by_face_cortest$p.value
+p_comp = "="
+if (age_by_face_p < .001) {
+  age_by_face_p = .001
+  p_comp <- "<"
+}
+```
 
 ```{r}
 #| label: fig-age-corr
 #| fig-cap: Correlation between models’ actual age and mode perceived age
 
-ggplot()
+label_text <- sprintf("r = %.2f, p %s %.3f", 
+                      age_by_face_r, p_comp, age_by_face_p)
+
+age_by_face |> 
+  filter(!is.na(age_actual) & !is.na(age_perc)) |>
+  #count(age_actual, age_perc) |>
+  ggplot(aes(x = age_actual, y = age_perc)) +
+  geom_point(alpha = 0.25) +
+  geom_smooth(method = "lm",  formula = y ~ x, se = TRUE, colour = "black") +
+  annotate("text", x = 65, y = 20, label = label_text, hjust = 0) +
+  labs(x = "Actual Age", y = "Perceived Age [Mode]") +
+  theme_bw()
 ```
- 
- 
-#### Exploratory Inferential Statistics
-<!-- to add, pending code from Lisa & Iris -->
-
-##### Standardized vs Unstandardized Neutral Trait Ratings 
-Compare attractiveness, dominance, and trustworthiness ratings across level of standardization for models w/ both kinds of photo (3 t-tests)
-
-##### Emotion Categorizations 
-Compare the ‘correct’ proportions across expression type (i.e., to show that happiness is perceived significantly more correctly & fear significantly more inaccurately than the others)
-
-##### Emotion Intensity Ratings 
-Compare emotion intensity ratings across expression type (i.e., to show that happiness appears most intense)
  
 
 ## Discussion
@@ -612,6 +1258,7 @@ The data associated with the images are also valuable. First, we collected model
 This work also provides proof of concept that various labs, all following the same protocol and using the same equipment, can take comparable images to form a coherent face database. This broadens opportunities for future image database collection: A database does not need to all be collected by one lab in one location.
 
 ### Reflections on the Process & Limitations
+
 The leadership team found that having a broad variety of areas of expertise and diverse research backgrounds within the broader team was invaluable in both developing the database and in troubleshooting issues. We moreover found that setting out expectations at the start of the project through a collaboration agreement was essential. However, we ran into various issues throughout the process, which are common to Big Team Science initiatives. For example, with so many labs and individual researchers involved, timelines for completion necessarily stretched. This made momentum difficult to maintain at times. Planning in generous buffer time for such large-scale projects and managing team members' expectations around timelines is therefore essential. We also faced difficulty in finding an optimal way to communicate effectively with all team members, given varying preferences (e.g., via email vs. other team communication platforms). It is perhaps worth surveying members of a big team at project start about communication possibilities, as well as outlining more specific communication expectations in a collaboration agreement. 
 
 After Phase 1, we surveyed the ManyFaces research team to provide feedback on the process of collecting images using the protocol. Team members commonly expressed the desire for additional concise guidance in following the protocol, including an additional abbreviated protocol with numbered steps to follow during data collection and a video tutorial (in addition to the provided illustrative images) showing the necessary steps for researchers unfamiliar with camera equipment. These are requests that we can incorporate into future protocol updates. Doing so could both make the process easier for researchers and minimize errors and deviations from the protocol, ensuring greater consistency between sites. 
@@ -625,5 +1272,6 @@ In addition to our choices of equipment, we also made certain pragmatic choices 
 Finally, we collected images of 211 models, but no single image type included images of all models. Rather, the maximum number of models represented in a single image type was 205 images (standardized neutral, front-facing). This led to missing perceived age/ethnicity data for six models who had unstandardized but not standardized neutral images available.
 
 ### Conclusion
+
 Here, we introduce a new diverse face image database, which will be useful to researchers interested in a variety of questions related to social perception, person recognition, and vision science. We demonstrate that a cohesive database can be compiled across a variety of sites, opening doors for future additions to this database and the development of future multi-lab databases.
 
