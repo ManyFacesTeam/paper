@@ -981,8 +981,7 @@ std_neutral |>
   scale_fill_manual(values = rainbow, drop = FALSE)
 ```
 
- 
-A key aim of this study was to provide normative data for each face model in the database. To visualize rating patterns, we created heatmaps with rating values on the x-axis and face models (separated by contributing lab site) on the y-axis. These heatmaps illustrate how the distribution of ratings varied across models and traits, with lighter tiles indicating that more raters gave a particular rating to that model (see Appendix) — capturing both between-model differences within a trait and within-model differences across traits.
+
 
 
 ##### Unstandardized Neutral Trait Ratings
@@ -1034,9 +1033,7 @@ unstd_neutral |>
   scale_fill_manual(values = rainbow, drop = FALSE)
 ```
 
- 
-As with the ratings of the standardized images, we produced heatmaps for each of the three traits capturing between-model differences within a trait and within-model differences across the traits (see Appendix).
- 
+
  
 ##### Emotion Categorization and Intensity Ratings
 
@@ -1166,7 +1163,7 @@ emo_int |>
  
 ##### Perceived Age
 
-The distribution of raters’ perceptions of models’ ages is shown in @fig-age-hist. 26-30 years was the most-chosen age across raters and models. The correlation between models’ mode perceived age and actual age appears in @fig-age-corr, and heatmaps of perceived age for each model appear in the Appendix.
+The distribution of raters’ perceptions of models’ ages is shown in @fig-age-hist. 26-30 years was the most-chosen age across raters and models. The correlation between models’ mode perceived age and actual age appears in @fig-age-corr.
 
 ```{r}
 dv_levels <- seq(20, 85, 5)
