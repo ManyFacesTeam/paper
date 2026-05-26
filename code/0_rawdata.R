@@ -72,5 +72,5 @@
 #   unique()
 #
 # # write to the data directory
-# write_csv(exp_raw, "data/manyfaces-pilot-exp.csv")
-# write_csv(quest_raw, "data/manyfaces-pilot-quest.csv")
+# write_csv(exp_raw, "data/manyfaces_ratings_exp.csv")
+# write_csv(quest_raw, "data/manyfaces_ratings_quest.csv")
