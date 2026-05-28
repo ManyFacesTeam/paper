@@ -55,7 +55,6 @@ csl: apa.csl
 library(psych) # ICC, alpha, omega
 library(furrr) # run code parallel
 library(tidyverse)
-library(patchwork)
 library(flextable)
 #devtools::install_github("debruine/webmorphR@dev")
 #library(webmorphR)
@@ -98,7 +97,7 @@ ct <- cols(
   weight = col_integer(),
   ethnicity_rec = col_factor(levels = c("White", "Black", "Asian", "Indigenous", "MENA", "Latine", "Mixed", "Ambiguous label"), include_na = TRUE)
 )
-data_models <- read_csv("data/manyfaces_ratings_models_cleaned.csv",
+data_models <- read_csv("data/manyfaces-pilot-models_cleaned.csv",
                         col_types = ct)
 
 # Rating data (post exclusions)
@@ -299,13 +298,13 @@ knitr::include_graphics("fig/img-examples.png")
 # count faces per ethnicity category
 eth_rec <- count(data_models, ethnicity_rec, .drop = FALSE)
 eth_n <- as.list(eth_rec$n)
-names(eth_n) <- c(as.character(eth_rec$ethnicity_rec[1:8]), "NA")
+names(eth_n) <- c(as.character(eth_rec$ethnicity_rec[1:7]), "NA")
 ```
 
 
 For data cleaning, we first downloaded and reshaped the raw data from Experimentum. In the next step, we ensured that the models’ gender, race/ethnicity, and units of height and weight were consistently formatted across labs. 
 
-For gender and race/ethnicity, words presented in languages other than English were recoded to be presented in English (e.g., “mulher” to “female”, “preta” to “Black”). We then classified self-described race/ethnicity into one of seven categories (“White” (n = `r eth_n$White`), “Black” (n = `r eth_n$Black`), “Asian” (n = `r eth_n$Asian`), “Indigenous” (n = `r eth_n$Indigenous`), “MENA” (n = `r eth_n[["Middle Eastern or North African (MENA)"]]`) (Middle Eastern or North African), “Latine” (n = `r eth_n$Latine`), or “Mixed” (n = `r eth_n$Mixed`)), where possible. Descriptions that could not be clearly sorted into these categories were given “Ambiguous label” (n = `r eth_n[["Ambiguous label"]]`) and non-entries were recoded as NA (n = `r eth_n[["NA"]]`). 
+For gender and race/ethnicity, words presented in languages other than English were recoded to be presented in English (e.g., “mulher” to “female”, “preta” to “Black”). We then classified self-described race/ethnicity into one of seven categories (“White” (n = `r eth_n$White`), “Black” (n = `r eth_n$Black`), “Asian” (n = `r eth_n$Asian`), “Indigenous” (n = `r eth_n$Indigenous`), “MENA” (n = `r eth_n$MENA`)<!-- this code leaves a blank--> (Middle Eastern or North African), “Latine” (n = `r eth_n$Latine`), or “Mixed” (n = `r eth_n$Mixed`)), where possible. Descriptions that could not be clearly sorted into these categories were given “Ambiguous label” (n = `r eth_n[["Ambiguous label"]]`)<!-- this code leaves a blank--> and non-entries were recoded as NA (n = `r eth_n[["NA"]]`). 
 
 For height, we ensured all data were presented in centimeters, and for weight, we ensured that all data were presented in kilograms. Models could report height and weight in metric or imperial units, so we converted from imperial to metric where required. We also sanity-checked the reported units, assuming heights > 100 to be in centimeters and those < 100 to be in inches, and weights < 80 to be in kilograms. Any non-entries of height or weight for a model was recoded as NA .
 
@@ -523,35 +522,21 @@ Anonymous data are available on Github (<https://github.com/ManyFacesTeam/pilot-
 
 ```{r}
 n_demog_provided <- data_quest$session_id |> unique() |> length()
-
-age <- data_quest |>
-  ungroup( ) |> 
-  summarise(M = mean(age, na.rm=TRUE),
-            SD = sd(age, na.rm=TRUE)) |> 
-  mutate(across(everything(), ~round(.x, 2)))
-
-gender <- count(data_quest, gender, sort = TRUE)
-gender_n <- setNames(gender$n, gender$gender)
-
-ethnicity <- count(data_quest, ethnicity_rec, sort = TRUE)
-ethnicity_n <- setNames(ethnicity$n, ethnicity$ethnicity_rec)
-
-devices <- count(data_quest, device, sort = TRUE)
-devices_n <- setNames(devices$n, devices$device)
 ```
 
-We collected the following demographic data from our raters (N = `r n_demog_provided` provided data): Age, gender, residence, ethnicity, and devices on which the ratings were completed.
 
-Raters were predominantly younger adults (M age = `r age$M` years, SD = `r age$SD`; see @fig-age for histogram), male (n = `r gender_n["male"]`; `r gender_n["female"]` female, `r gender_n["non-binary"]` nonbinary), and Black (n = `r ethnicity_n["Black"]`; `r ethnicity_n["White"]` White, `r ethnicity_n["Asian"]` Asian, `r ethnicity_n["Latine"]` Latine, `r ethnicity_n["Mixed"]` mixed, `r ethnicity_n["MENA"]` MENA; `r ethnicity_n[["Indigenous / Pacific Islander"]]` Indigenous or Pacific Islander; `r ethnicity_n["Ambiguous label"]` ambiguously labelled or unreported), and spanned world regions (primarily Africa, Americas, and Europe; see @tbl-raters-country for breakdown by country). Participants completed the study on a variety of devices (`r devices_n["laptop"]` laptop, `r devices_n["desktop"]` desktop computer, `r devices_n["phone"]` mobile phone, `r devices_n["tablet"]` tablet). 
+We collected the following demographic data from our raters (N = `r n_demog_provided` provided data): Age, gender, residence, ethnicity, and devices on which the ratings were completed. See @fig-gender-age and Tables 3-5 for demographic information.
 
 ```{r}
-#| label: fig-age
-#| fig-cap: Histogram of rater age
+#| label: fig-gender-age
+#| fig-cap: Histogram of rater age, separated by gender
 
 data_quest |> 
-  ggplot(aes(x = age)) +
-  geom_histogram(binwidth = 1, fill = "orchid") +
-  theme_minimal() +
+  ggplot(aes(x = age, fill = gender)) +
+  geom_histogram(binwidth = 1) +
+  scale_fill_manual(values = c("hotpink", "dodgerblue", "darkorchid", "gray")) +
+  guides(fill  = guide_legend(position = "inside")) +
+  theme(legend.position.inside = c(.7, .7)) +
   labs(x = "Age (years)", y = NULL)
 ```
 
@@ -562,7 +547,6 @@ data_quest |>
 
 data_quest |> 
   count(residence) |>
-  #ungroup() |> 
   summarise(.by = n, res = paste(residence, collapse = ", ")) |>
   arrange(desc(n)) |>
   select(res, n) |>
@@ -571,45 +555,251 @@ data_quest |>
   flextable::width(j = 1, 2)
 ```
  
+```{r}
+#| label: tbl-raters-eth
+#| tbl-cap: Rater race/ethnicity
+
+data_quest |> 
+  count(ethnicity_rec) |>
+  arrange(desc(n)) |>
+  flextable() |>
+  colformat_char(na_str = "Missing") |>
+  set_header_labels(ethnicity_rec = "Ethnicity", n = "N") |>
+  flextable::width(j = 1, 2)
+```
+
+```{r}
+#| label: tbl-raters-dev
+#| tbl-cap: Devices used by raters to complete the study
+
+data_quest |> 
+  count(device) |>
+  arrange(desc(n)) |>
+  flextable() |>
+  colformat_char(na_str = "missing") |>
+  set_header_labels(device = "Device Used", n = "N") |>
+  flextable::width(j = 1, 2)
+```
+
 
 #### Agreement Indicators for the Ratings
 
-In the first step, we calculated intraclass correlation coefficients [ICC(2,k)] for each of the ratings. The average reliability across raters was excellent for ratings of standardized and unstandardized neutral faces’ attractiveness, dominance, and trustworthiness, standardized neutral faces’ gender-typicality, and standardized emotional faces’ emotion intensity (.84 ≤ ICC ≤ .98), but poorer for ratings of standardized neutral faces’ memorability (ICC = .58; see @tbl-icc).
+
+##### Standardized Trait Ratings
 
 ```{r}
-#| label: tbl-icc
-#| tbl-cap: Intraclass correlation coefficients for trait and emotion intensity ratings
+icc_table <- data_trait |> 
+  group_by(exp) |> 
+  group_map(calc_icc) |> 
+  bind_rows() |>
+  rename(Rating = experiment,
+         N = n_raters,
+         ICC = 3,
+         lower = 4, 
+         upper = 5)
+
+s_n_min <- min(icc_table$N)
+s_n_max <- max(icc_table$N)
+```
+
+In the first step, we calculated intraclass correlation coefficients [ICC(2,k)] for ratings of standardized images. The number of raters ranged from `r s_n_min` to `r s_n_max` for each trait. The average reliability across raters was excellent for ratings of attractiveness, dominance, trustworthiness, and gender-typicality, but poorer for ratings of memorability (see @tbl-std-neu-icc).
+
+```{r}
+#| label: tbl-std-neu-icc
+#| tbl-cap: Intraclass correlation coefficients for ratings of standardized neutral faces
 
 icc_table |>
   flextable() |>
+  colformat_double(digits = 2) |>
   flextable::width(j = 1, 2) |>
   add_header_row(values = c("", "95% CI"), colwidths = c(3, 2)) |>
   align(i = 1, align = "center", part = "header")
 ```
 
-Next, we examined the number of raters required for ratings to reach stable levels of reliability defined as ICC(2,k) values of 0.75 (see @fig-icc-cos). Emotion intensity and attractiveness ratings stabilized with the fewest participants (reaching a median ICC(2,k) of 0.75 at 10 raters for happiness, disgust, and surprise; 20 for anger, fear, sadness, and attractiveness) and were also the only ratings to exceed a median ICC(2,k) of 0.90. Ratings for dominance, trustworthiness, and gender-typicality stabilized at larger samples (reached a median ICC(2,k) of 0.75 with 40-60 raters), whereas ratings for memorability did not reach these levels of reliability.
+ 
+Next, we examined the number of raters required for trait ratings to reach stable levels of reliability defined as ICC(2,k) values of 0.75 (see Figure 3). Attractiveness ratings stabilized with the fewest participants, reaching a median ICC(2,k) of 0.75 at approximately `r n_075[["attractive"]]` raters. It was also the only trait to exceed a median ICC(2,k) of 0.90, which occurred with `r n_090[["attractive"]]` raters. Ratings for dominance, trustworthiness, and gender-typicality reached a median ICC(2,k) of 0.75 with `r n_075[["dominant"]]` raters (see @fig-icc-cos). 
 
 ```{r}
 #| label: fig-icc-cos
 #| fig-cap: Corridors of stability for ICC
 #| fig-subcap: Dashed horizontal lines indicate ICC(2,k) of 0.75 and 0.90, respectively.
-#| fig-height: 15
-#| fig-width: 10
 
-(results_trait_std$plot + ggtitle("Standardized trait ratings")) /
-  (results_trait_unstd$plot + ggtitle("Unstandardized trait ratings")) /
-  (results_emo_int$plot + ggtitle("Emotion intensity")) +
-  plot_layout(heights = c(2, 1, 2)) +
-  plot_annotation(tag_levels = "A")
+icc2k_corridor_summary |> 
+  ggplot(aes(x = n_raters_sampled)) +
+  geom_ribbon(aes(ymin = ICC2_k_low, ymax = ICC2_k_high), 
+              alpha = 0.15, fill = "grey60") +
+  # Median ICC(2,k)
+  geom_line(aes(y = ICC2_k_median), linewidth = 0.8, colour = "black") +
+  # Thresholds: 0.75 grey, 0.9 black
+  geom_hline(yintercept = 0.75, linetype = "dashed", colour = "grey40") +
+  geom_hline(yintercept = 0.9, linetype = "dashed", colour = "black") +
+  geom_vline(data = thresholds_median_075 |> filter(!is.na(N_for_075_median)),
+             aes(xintercept = N_for_075_median), colour = "red", linetype = "dotted") +
+  geom_text(data = thresholds_median_075 |> filter(!is.na(N_for_075_median)),
+            aes(x = N_for_075_median, y = 0.60, label = paste0("N=", N_for_075_median)),
+            angle = 0, hjust = -0.2, vjust = 0,, colour = "red", size = 3) +
+  facet_wrap(~ experiment) +
+  scale_y_continuous(limits = c(0, 1)) +
+  labs(
+    x = "Number of raters sampled", 
+    y = "ICC(2,k)") +
+  scale_x_continuous(breaks = seq(10, 100, 10), labels = seq(10, 100, 10)) +
+  labs(x = "Number of raters sampled", y = "ICC(2,k)") +
+  theme_minimal(base_size = 12) +
+  theme(
+    strip.text = element_text(size = 12, face = "bold"),
+    axis.text = element_text(size = 11),
+    axis.title = element_text(size = 12),
+    plot.subtitle = element_text(size = 11)
+  )
 ```
 
-To further check inter-rater agreement, we used both Cronbach’s alpha (α) and McDonald’s omega total (ωt; see @tbl-alpha-omega). For attractiveness, dominance, trustworthiness, gender-typicality, and emotion intensity ratings, both measures indicated excellent inter-rater agreement (.88 ≤ α ≤ .99; .90 ≤ ωt ≤ .99). For ratings of memorability, α was lower (0.66), suggesting reduced inter-rater agreement. ωt for memorability was substantially higher (0.87), suggesting better agreement under the assumption that raters varied in how consistently they judged memorability, a pattern consistent with the lower ICC observed for this trait.
+```{r}
+#| warning: false
+#| message: false
+alpha_omega_table <- data_trait |> 
+  group_by(exp) |> 
+  group_map(purrr::partial(calc_alpha_omega)) |> 
+  bind_rows() |>
+  rename(Rating = experiment,
+         N = n_raters,
+         alpha = alpha,
+         omega = omega_t)
+
+mem <- filter(alpha_omega_table, Rating == "memorable")
+a_mem <- mem$alpha |> format(digits = 2)
+o_mem <- mem$omega |> format(digits = 2)
+``` 
+
+To further check inter-rater agreement, we used both Cronbach’s alpha (α) and McDonald’s omega total (ωt; see @tbl-std-neu-alpha-omega). For four of the five traits, both α and ωt exceeded 0.90, indicating excellent inter-rater agreement. For the fifth trait (memorability), α was lower (`r a_mem`), suggesting reduced inter-rater agreement. ωt for memorability was substantially higher (`r o_mem`), suggesting better agreement under the assumption that raters varied in how consistently they judged memorability, a pattern consistent with the lower ICC observed for this trait.
 
 ```{r}
-#| label: tbl-alpha-omega
-#| tbl-cap: Cronbach’s alpha and McDonald’s omega total for for trait and emotion intensity ratings.
+#| label: tbl-std-neu-alpha-omega
+#| tbl-cap: Cronbach’s alpha and McDonald’s omega total for ratings of standardized neutral faces.
 
 alpha_omega_table |>
+  flextable() |>
+  colformat_double(digits = 2) |>
+  flextable::width(j = 1, 2)
+```
+ 
+##### Unstandardized Trait Ratings
+
+```{r}
+#| warning: false
+#| message: false
+
+icc_table_unstd <- data_trait_unstd |> 
+  group_by(exp) |> 
+  group_map(calc_icc, check_dropped_raters = FALSE) |> 
+  bind_rows() |>
+  rename(Rating = experiment,
+         N = n_raters,
+         ICC = 3,
+         lower = 4, 
+         upper = 5)
+
+u_n_min <- min(icc_table_unstd$N)
+u_n_max <- max(icc_table_unstd$N)
+
+alpha_omega_table_unstd <- data_trait_unstd |> 
+  group_by(exp) |> 
+  group_map(calc_alpha_omega) |> 
+  bind_rows() |>
+  rename(Rating = experiment,
+         N = n_raters,
+         alpha = alpha,
+         omega = omega_t)
+
+u_a_min <- min(alpha_omega_table_unstd$alpha) |> format(digits = 2)
+u_a_max <- max(alpha_omega_table_unstd$alpha) |> format(digits = 2)
+u_o_min <- min(alpha_omega_table_unstd$omega) |> format(digits = 2)
+u_o_max <- max(alpha_omega_table_unstd$omega) |> format(digits = 2)
+``` 
+
+As with standardized trait ratings, we calculated intraclass correlation coefficients for ratings of unstandardized images. The number of raters ranged from  `r u_n_min` to `r u_n_max`. Average inter-rater reliability was excellent for all three traits (see @tbl-unstd-neu-icc). This was further supported by Cronbach's α ranging from `r u_a_min` to `r u_a_max` and McDonald's ωt ranging from `r u_o_min` to `r u_o_max` (see @tbl-unstd-neu-alpha-omega).
+
+
+```{r}
+#| label: tbl-unstd-neu-icc
+#| tbl-cap: Agreement for ratings of unstandardized neutral faces
+
+icc_table_unstd |>
+  flextable() |>
+  colformat_double(digits = 2) |>
+  flextable::width(j = 1, 2) |>
+  add_header_row(values = c("", "95% CI"), colwidths = c(3, 2)) |>
+  align(i = 1, align = "center", part = "header")
+```
+ 
+
+```{r}
+#| label: tbl-unstd-neu-alpha-omega
+#| tbl-cap: Cronbach’s alpha and McDonald’s omega total for ratings of unstandardized neutral faces.
+
+alpha_omega_table_unstd |>
+  flextable() |>
+  colformat_double(digits = 2) |>
+  flextable::width(j = 1, 2)
+```
+
+
+##### Emotion Intensity Ratings
+
+```{r}
+#| warning: false
+#| message: false
+icc_table_emo <- data_emo_int |> 
+  group_by(exp) |> 
+  group_map(calc_icc) |> 
+  bind_rows() |>
+  rename(Rating = experiment,
+         N = n_raters,
+         ICC = 3,
+         lower = 4, 
+         upper = 5)
+
+emo_n_min <- min(icc_table_emo$N)
+emo_n_max <- max(icc_table_emo$N)
+
+emo_icc_min <- min(icc_table_emo$ICC) |> format(digits = 2)
+emo_icc_max <- max(icc_table_emo$ICC) |> format(digits = 2)
+
+alpha_omega_table_emo <- data_emo_int |> 
+  group_by(exp) |> 
+  group_map(calc_alpha_omega) |> 
+  bind_rows() |>
+  rename(Rating = experiment,
+         N = n_raters,
+         alpha = alpha,
+         omega = omega_t)
+
+emo_a_min <- min(alpha_omega_table_emo$alpha) |> format(digits = 2)
+emo_a_max <- max(alpha_omega_table_emo$alpha) |> format(digits = 2)
+emo_o_min <- min(alpha_omega_table_emo$omega) |> format(digits = 2)
+emo_o_max <- max(alpha_omega_table_emo$omega) |> format(digits = 2)
+```
+
+Next, we calculated intraclass correlation coefficients, Cronbach's α, and McDonald's ωt for emotion intensity ratings. The number of raters ranged from `r emo_n_min` to `r emo_n_max`. The average reliability across raters was excellent for all emotions, with ICC(2,k) ranging from `r emo_icc_min` to `r emo_icc_max`, Cronbach’s α ranging from `r emo_a_min` to `r `, and  McDonald's ωt ranging from `r emo_o_min` to `r emo_o_max` (see @tbl-emo-icc and @tbl-emo-alpha-omega).
+
+
+```{r}
+#| label: tbl-emo-icc
+#| tbl-cap: Intraclass correlation coefficients for ratings of emotional faces’ emotion intensity
+
+icc_table_emo |>
+  flextable() |>
+  colformat_double(digits = 2) |>
+  flextable::width(j = 1, 2) |>
+  add_header_row(values = c("", "95% CI"), colwidths = c(3, 2)) |>
+  align(i = 1, align = "center", part = "header")
+```
+
+```{r}
+#| label: tbl-emo-alpha-omega
+#| tbl-cap: Cronbach’s alpha and McDonald’s omega total for ratings of emotional faces’ emotion intensity
+
+alpha_omega_table_emo |>
   flextable() |>
   colformat_double(digits = 2) |>
   flextable::width(j = 1, 2)
