@@ -62,9 +62,13 @@ ttest_summary <- function(x, y) {
          p = p_val)
 }
 
-#################### ---- ICC  ####################
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+# ---- INTRACLASS CORRELATION COEFFICIENTS ----
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
-### ---- Calculate observed ICC ----
+## --- --- --- --- --- ---
+## ---- Observed ICC -----
+## --- --- --- --- --- ---
 
 # Compute ICC(2,k) using psych package
 calc_icc <- function(data,
@@ -125,8 +129,11 @@ calc_icc <- function(data,
   }
 }
 
+## --- --- --- --- --- --- --- --- --- ---
+## ---- Corridor of stability (COS) -----
+## --- --- --- --- --- --- --- --- --- ---
 
-### ---- CORRIDOR OF STABILITY: Resampling ----
+#### ---- COS: Resampling ----
 # At what sample size (if at all) do ratings reach acceptable reliability of .75 to .90?
 
 calc_icc_cos <- function(data, exp,
@@ -172,7 +179,7 @@ calc_icc_cos <- function(data, exp,
   list_rbind(all_results)
 }
 
-### ---- CORRIDOR OF STABILITY: Cache helper ----
+#### ---- COS: Cache helper ----
 
 # so next time script runs it will only recompute
 # ICCs for experiments for which data has changed
@@ -199,7 +206,7 @@ run_or_load_icc <- function(exp_name, data,
   }
 }
 
-### ---- CORRIDOR OF STABILITY: Full pipeline ----
+#### ---- COS: Full pipeline ----
 
 run_corridor_pipeline <- function(data,
                                   seed = 123,
@@ -288,9 +295,9 @@ run_corridor_pipeline <- function(data,
   )
 }
 
-#################### ---- Cronbach's alpha and McDonalds omega total ####################
-
-### ---- Oberved ----
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+# ---- Cronbach's alpha & McDonalds omega ----
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
 calc_alpha_omega <- function(data,
                              group,
@@ -346,7 +353,12 @@ calc_alpha_omega <- function(data,
   }
 }
 
-#################### ---- Hehman et al. (2018): Assessing point at which averages are stable ####################
+
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+# ---- POINT OF STABILITY (POS) ----
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+
+# Hehman et al. (2018): Assessing point at which averages are stable
 
 # NOTE: Original code written by Gabe Nespoli
 # https://github.com/gabenespoli/resampling
@@ -366,10 +378,18 @@ calc_alpha_omega <- function(data,
 # 7)	Record POS for each of the three COS thresholds, and plot.
 
 
-##### ---- CI functions #####
+## --- --- --- --- --- ---
+## ---- CI functions -----
+## --- --- --- --- --- ---
 
 get_percentile <- function(x, interval) {
   boundary <- floor(length(x) * (1 - interval) / 2)
+
+  if (boundary < 1) {
+    warning("Too few values to compute percentile CI reliably; boundary clamped to 1. Consider increasing iterations.")
+    boundary <- 1L
+  }
+
   x <- sort(x)
   ll <- x[boundary]
   ul <- x[length(x) - boundary]
@@ -398,9 +418,10 @@ get_ci <- function(x, interval = 0.95, method = "percentile") {
   return(ci)
 }
 
-##### -------- The meaty stuff #####
+## --- --- --- --- --- --- --- ---
+## ---- New custom functions -----
+## --- --- --- --- --- --- --- ---
 
-# New custom function
 calc_stability_stats <- function(data = data,
                                  col_map = list(trait = "trait", # define what required columns are called in your data
                                                 stim_id = "stim_id",
@@ -410,7 +431,9 @@ calc_stability_stats <- function(data = data,
                                  ci_interval = 0.95, # CI to use to define COS and hence determine POS
                                  ci_method = "percentile", # other option: normal = 95% CIs based on normal distribution (rather than actual percentiles)
                                  cos_threshold = 0.5, # how much variability in mean is accepted as "stable" (default: 0.5 points on rating scale)
+                                 seed = 123,
                                  save_means = FALSE) {
+  set.seed(seed)
   trait <- col_map$trait
   stim_id <- col_map$stim_id
   rating <- col_map$rating
@@ -466,7 +489,7 @@ calc_stability_stats <- function(data = data,
 
 }
 
-# RESAMPLING
+#### ---- POS: resampling ----
 resample_group <- function(ratings, N, iterations) {
   result <- matrix(NA_real_, nrow = N, ncol = iterations)
   for (n in seq_len(N)) {
@@ -483,15 +506,15 @@ resample_group <- function(ratings, N, iterations) {
 }
 
 
-# POINT OF STABILITY
+#### ---- POS: full function  ----
 # Based on CIs for each of respective sample sizes
 # Threshold to be adjusted to whatever is desired (e.g., values used by Hehman et al., 2018)
-# Note: Hehman et al. compare min CI to set threshold, but I think it would be more conservative to use max CI?
+# Note: Hehman et al. compare min CI to set threshold, but I think it is more conservative to use max CI: this ensures whole CI falls within corridor.
 calc_pos <- function(cis, threshold, inarow = 1, trait = "trait") {
 
   threshold <- abs(threshold)
 
-  cis  |>
+  cis |>
     group_by(across(all_of(trait))) |>
     mutate(max_ci = pmax(abs(ll), abs(ul)))  |>
     summarise(
@@ -500,13 +523,66 @@ calc_pos <- function(cis, threshold, inarow = 1, trait = "trait") {
         if (length(stable) < inarow) {
           NA_integer_
         } else {
-          runs <- map_lgl(
-            1:(length(stable) - inarow + 1),
-            ~ all(stable[.x:(.x + inarow - 1)])
-          )
-          match(TRUE, runs) %||% NA_integer_
+          runs <- map_lgl(1:(length(stable) - inarow + 1),
+                          ~ all(stable[.x:(.x + inarow - 1)]))
+          first_stable_idx <- match(TRUE, runs)
+          if (is.na(first_stable_idx)) {
+            NA_integer_
+          } else {
+            sample_size[first_stable_idx]
+          }
         }
       },
       .groups = "drop"
     )
+}
+
+#### ---- POS: Plot  ----
+plot_pos <- function(summary_ci,
+                     pos,
+                     fill_values,
+                     exp_levels = NULL,
+                     cos_threshold = 0.5,
+                     label_x_offset = 30,
+                     label_y = 1.6) {
+
+  pos <- pos |>
+    mutate(label = paste0("Point of stability\n(N = ", pos, ")"))
+
+  if (!is.null(exp_levels)) {
+    summary_ci <- summary_ci |>
+      mutate(exp = factor(exp, exp_levels))
+  }
+
+  summary_ci |>
+    ggplot(aes(x = sample_size)) +
+    geom_ribbon(aes(ymin = ll, ymax = ul, fill = exp),
+                alpha = 0.5) +
+    geom_vline(data = pos,
+               aes(xintercept = pos),
+               colour = "black",
+               linetype = "solid",
+               linewidth = .75) +
+    geom_hline(yintercept = c(-cos_threshold, cos_threshold),
+               linetype = "dashed",
+               colour = "grey30",
+               linewidth = 0.5) +
+    facet_wrap(~ exp) +
+    xlab("Sample size (N)") +
+    ylab("Centered mean ratings") +
+    scale_fill_manual(values = fill_values) +
+    theme_minimal() +
+    theme(panel.grid.major = element_line(colour = "#e8e8e8"),
+          panel.grid.minor = element_line(colour = "#e8e8e8"),
+          strip.text = element_text(size = 12, face = "bold"),
+          axis.text = element_text(size = 10),
+          axis.title = element_text(size = 12, face = "bold"),
+          legend.position = "none") +
+    geom_label(data = pos,
+               aes(x = pos + label_x_offset, y = label_y, label = label),
+               fill = NA,
+               linewidth = 0,
+               colour = "black",
+               size = 3.5,
+               inherit.aes = FALSE)
 }
