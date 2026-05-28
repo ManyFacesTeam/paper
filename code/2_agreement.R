@@ -108,13 +108,13 @@ alpha_omega_table <- alpha_omega_std |>
 ## --- POINTS OF STABILITY ----
 ## --- --- --- --- --- --- --- --- --- --- --- ---
 
-# --- STANDARDISED RATINGS
+### ---- Standardized ratings ----
 
 # To save time, output cached
 if (!file.exists("cache/pos_traits_std.rds")) {
   set.seed(123)
   future::plan(multisession, workers = workers)
-  stability_stats_traits <- calc_stability_stats(data = data_trait,
+  stability_stats_traits <- calc_stability_stats(data = data_trait_std,
                                                  N = 100,
                                                  iterations = 300,
                                                  ci_interval = 0.95, ci_method = "percentile",
@@ -137,7 +137,7 @@ summary_ci_traits <- stability_stats_traits$cis |>
             .groups = "drop")
 
 
-# --- UNSTANDARDISED RATINGS
+### ----  Unstandardized ratings ----
 if (!file.exists("cache/pos_traits_unstd.rds")) {
   set.seed(123)
   future::plan(multisession, workers = workers)
@@ -164,7 +164,7 @@ summary_ci_traits_unstd <- stability_stats_traits_unstd$cis |>
             .groups = "drop")
 
 
-# --- EMOTION INTENSITY RATINGS
+### ----  Emotion intensity ratings ----
 if (!file.exists("cache/pos_emo.rds")) {
   set.seed(123)
   future::plan(multisession, workers = workers)

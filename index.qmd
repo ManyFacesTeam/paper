@@ -596,18 +596,17 @@ Next, we examined the number of raters required for ratings to reach stable leve
 #| fig-height: 15
 #| fig-width: 10
 
-(results_trait_std$plot + ggtitle("Standardized trait ratings")) /
-  (results_trait_unstd$plot + ggtitle("Unstandardized trait ratings")) /
-  (results_emo_int$plot + ggtitle("Emotion intensity")) +
-  plot_layout(heights = c(2, 1, 2)) +
-  plot_annotation(tag_levels = "A")
+(results_trait_std$plot + ggtitle("A Standardized trait ratings")) /
+  (results_trait_unstd$plot + ggtitle("B Unstandardized trait ratings")) /
+  (results_emo_int$plot + ggtitle("C Emotion intensity ratings")) +
+  plot_layout(heights = c(2, 1, 2))
 ```
 
 To further check inter-rater agreement, we used both Cronbach’s alpha (α) and McDonald’s omega total (ωt; see @tbl-alpha-omega). For attractiveness, dominance, trustworthiness, gender-typicality, and emotion intensity ratings, both measures indicated excellent inter-rater agreement (.88 ≤ α ≤ .99; .90 ≤ ωt ≤ .99). For ratings of memorability, α was lower (0.66), suggesting reduced inter-rater agreement. ωt for memorability was substantially higher (0.87), suggesting better agreement under the assumption that raters varied in how consistently they judged memorability, a pattern consistent with the lower ICC observed for this trait.
 
 ```{r}
 #| label: tbl-alpha-omega
-#| tbl-cap: Cronbach’s alpha and McDonald’s omega total for for trait and emotion intensity ratings
+#| tbl-cap: Cronbach’s alpha and McDonald’s omega total for trait and emotion intensity ratings
 
 alpha_omega_table |>
   flextable() |>
@@ -617,129 +616,31 @@ alpha_omega_table |>
  
 #### Points of Stability
 
-To determine the number of raters required for stable ratings, we computed the point of stability [POS; @hehman_assessing_2025], defined as the smallest sample size at which 95% of resampled means fall within a corridor of stability of ±0.5 points and do not again exceed it. As shown in Figures 4-6, the ratings of standardized images reached stability between 37 and 44 raters, the ratings of unstandardized images between 37 and 41 raters, and emotion intensity ratings of standardized emotional faces between 29 and 50 raters.
+To determine the number of raters required for stable ratings, we computed the point of stability [POS; @hehman_assessing_2025], defined as the smallest sample size at which 95% of resampled means fall within a corridor of stability of ±0.5 points and do not again exceed it. As shown in @fig-pos, the ratings of standardized images reached stability between 37 and 44 raters, the ratings of unstandardized images between 37 and 41 raters, and emotion intensity ratings of standardized emotional faces between 29 and 50 raters.
 
 ```{r}
-#| label: fig-std-neu-pos
-#| fig-cap: Points of stability for ratings of standardised neutral faces
+#| label: fig-pos
+#| fig-cap: Points of stability for trait and emotion intensity ratings
+#| fig-subcap: Dashed horizontal lines indicate corridor of stability at +/- 0.5 points. Vertical lines indicate point of stability.
+#| fig-height: 15
+#| fig-width: 10
 
-stability_stats_traits$pos$label <- paste0("Point of stability\n(N = ", stability_stats_traits$pos$pos, ")")
+p_std <- plot_pos(summary_ci_traits, stability_stats_traits$pos, 
+                    fill_values = rainbow, exp_levels = exp_levels_neutral)
 
-summary_ci_traits |> 
-  mutate(exp = factor(exp, exp_levels_neutral)) |>
-  ggplot(aes(x = sample_size)) +
-  geom_ribbon(aes(ymin = ll, ymax = ul, fill = exp),
-              alpha = 0.5) +
-  geom_vline(data = stability_stats_traits$pos,
-             aes(xintercept = pos),
-             colour = "black",
-             linetype = "solid",
-             linewidth = .75) +
-  geom_hline(yintercept = c(-0.5, 0.5),
-             linetype = "dashed",
-             colour = "grey30",
-             linewidth = 0.5) +
-  facet_wrap(~ exp) +
-  xlab("Sample size (N)") +
-  ylab("Centered mean ratings") +
-  scale_fill_manual(values = rainbow) +
-  theme_minimal() +
-  theme(panel.grid.major = element_line(colour = "#e8e8e8"),
-        panel.grid.minor = element_line(colour = "#e8e8e8"),
-        strip.text = element_text(size = 12, face = "bold"),
-        axis.text = element_text(size = 10),
-        axis.title = element_text(size = 12, face = "bold"),
-        legend.position = "none") +
-  geom_label(data = stability_stats_traits$pos,
-             aes(x = pos + 30, y = 1.6, label = label),
-             fill = NA,   
-             linewidth = 0,
-             colour = "black",    
-             size = 3.5,
-             inherit.aes = FALSE)
+p_unstd <- plot_pos(summary_ci_traits_unstd, stability_stats_traits_unstd$pos, 
+                    fill_values = rainbow, exp_levels = exp_levels_neutral_unstd)
+
+p_emo <- plot_pos(summary_ci_emo_int, stability_stats_emo_int$pos, 
+                    fill_values = rainbow)
+
+(p_std + ggtitle("A Standardized trait ratings")) /
+  (p_unstd + ggtitle("B Unstandardized trait ratings")) /
+  (p_emo + ggtitle("C Emotion intensity ratings")) +
+  plot_layout(heights = c(2, 1, 2))
 ```
 
 
-```{r}
-#| label: fig-unstd-neu-pos
-#| fig-cap: Points of stability for ratings of unstandardised neutral faces
-
-stability_stats_traits_unstd$pos$label <- paste0("Point of stability\n(N = ", stability_stats_traits_unstd$pos$pos, ")")
-
-summary_ci_traits_unstd |> 
-  mutate(exp = factor(exp, exp_levels_neutral_unstd)) |>
-  ggplot(aes(x = sample_size)) +
-  geom_ribbon(aes(ymin = ll, ymax = ul, fill = exp),
-              alpha = 0.5) +
-  geom_vline(data = stability_stats_traits_unstd$pos,
-             aes(xintercept = pos),
-             colour = "black",
-             linetype = "solid",
-             linewidth = .75) +
-  geom_hline(yintercept = c(-0.5, 0.5),
-             linetype = "dashed",
-             colour = "grey30",
-             linewidth = 0.5) +
-  facet_wrap(~ exp) +
-  xlab("Sample size (N)") +
-  ylab("Centered mean ratings") +
-  scale_fill_manual(values = rainbow) +
-  theme_minimal() +
-  theme(panel.grid.major = element_line(colour = "#e8e8e8"),
-        panel.grid.minor = element_line(colour = "#e8e8e8"),
-        strip.text = element_text(size = 12, face = "bold"),
-        axis.text = element_text(size = 10),
-        axis.title = element_text(size = 12, face = "bold"),
-        legend.position = "none") +
-  geom_label(data = stability_stats_traits_unstd$pos,
-             aes(x = pos + 30, y = 1.6, label = label),
-             fill = NA,   
-             linewidth = 0,
-             colour = "black",    
-             size = 3.5,
-             inherit.aes = FALSE)
-```
-
-```{r}
-#| label: fig-emo-pos
-#| fig-cap: Points of stability for emotion intensity ratings of standardised emotional faces of each expression
-
-stability_stats_emo_int$pos$label <- paste0("Point of stability\n(N = ", stability_stats_emo_int$pos$pos, ")")
-
-summary_ci_emo_int |> 
-  ggplot(aes(x = sample_size)) +
-  geom_ribbon(aes(ymin = ll, ymax = ul, fill = exp),
-              alpha = 0.5) +
-  geom_vline(data = stability_stats_emo_int$pos,
-             aes(xintercept = pos),
-             colour = "black",
-             linetype = "solid",
-             linewidth = .75) +
-  geom_hline(yintercept = c(-0.5, 0.5),
-             linetype = "dashed",
-             colour = "grey30",
-             linewidth = 0.5) +
-  facet_wrap(~ exp) +
-  xlab("Sample size (N)") +
-  ylab("Centered mean ratings") +
-  scale_fill_manual(values = rainbow) +
-  theme_minimal() +
-  theme(panel.grid.major = element_line(colour = "#e8e8e8"),
-        panel.grid.minor = element_line(colour = "#e8e8e8"),
-        strip.text = element_text(size = 12, face = "bold"),
-        axis.text = element_text(size = 10),
-        axis.title = element_text(size = 12, face = "bold"),
-        legend.position = "none") +
-  geom_label(data = stability_stats_emo_int$pos,
-             aes(x = pos + 30, y = 1.6, label = label),
-             fill = NA,   
-             linewidth = 0,
-             colour = "black",    
-             size = 3.5,
-             inherit.aes = FALSE)
-```
-
- 
 #### Descriptive Statistics
 
 In this section, we report the descriptive statistics for ratings of the neutral standardized images, the neutral unstandardized images, the emotion categorization task, the intensity of expressed emotions, and the ages of the models.
