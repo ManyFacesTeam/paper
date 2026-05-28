@@ -1,7 +1,7 @@
-##############################################################################
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 # ---- INTERRATER AGREEMENT AND POINT(S) OF STABILITY ----
-# --- Code for Results: Agreement Indicators and Results: Points of stability
-##############################################################################
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+# Code for Results: Agreement Indicators and Results: Points of stability
 
 # pull out relevant data
 data_trait_std <- data_exp |>
@@ -23,37 +23,90 @@ data_emo_cat <- data_exp |>
   filter(grepl("^em", exp)) |>
   droplevels()
 
-# ------------------------------------------------------------------
-# ---- AGREEMENT INDICATORS FOR THE RATINGS -----
-# ------------------------------------------------------------------
+## --- --- --- --- --- --- --- --- --- --- --- ---
+## ---- AGREEMENT INDICATORS FOR THE RATINGS -----
+## --- --- --- --- --- --- --- --- --- --- --- ---
 
-# ICC
+### ---- ICC ----
 icc_table_std <- data_trait_std |>
   group_by(exp) |>
   group_map(calc_icc) |>
   bind_rows() |>
-  mutate(across(where(is.numeric), \(x) round(x, 2)))
+  mutate(across(where(is.numeric), \(x) round(x, 2))) |>
+  rename(Rating = experiment,
+         N = n_raters,
+         ICC = 3,
+         lower = 4,
+         upper = 5)
 
 icc_table_unstd <- data_trait_unstd |>
   group_by(exp) |>
   group_map(calc_icc, check_dropped_raters = FALSE) |>
   bind_rows() |>
-  mutate(across(where(is.numeric), \(x) round(x, 2)))
+  mutate(across(where(is.numeric), \(x) round(x, 2)))  |>
+  rename(Rating = experiment,
+         N = n_raters,
+         ICC = 3,
+         lower = 4,
+         upper = 5)
 
 icc_table_emo <- data_emo_int |>
   group_by(exp) |>
   group_map(calc_icc) |>
   bind_rows() |>
-  mutate(across(where(is.numeric), \(x) round(x, 2)))
+  mutate(across(where(is.numeric), \(x) round(x, 2)))  |>
+  rename(Rating = experiment,
+         N = n_raters,
+         ICC = 3,
+         lower = 4,
+         upper = 5)
+
+icc_table <- icc_table_std |>
+  bind_rows(icc_table_unstd) |>
+  bind_rows(icc_table_emo)
 
 # Corridor of stability
 results_trait_std   <- run_corridor_pipeline(data_trait_std)
 results_trait_unstd <- run_corridor_pipeline(data_trait_unstd)
 results_emo_int     <- run_corridor_pipeline(data_emo_int)
 
-# ------------------------------------------------------------------
-# --- POINTS OF STABILITY
-# ------------------------------------------------------------------
+### ---- Cronbach's alpha and McDonald's omega ----
+
+alpha_omega_std <- data_trait_std |>
+  group_by(exp) |>
+  group_map(purrr::partial(calc_alpha_omega)) |>
+  bind_rows() |>
+  rename(Rating = experiment,
+         N = n_raters,
+         alpha = alpha,
+         omega = omega_t)
+
+alpha_omega_unstd <- data_trait_unstd |>
+  group_by(exp) |>
+  group_map(calc_alpha_omega) |>
+  bind_rows() |>
+  rename(Rating = experiment,
+         N = n_raters,
+         alpha = alpha,
+         omega = omega_t)
+
+alpha_omega_emo <- data_emo_int |>
+  group_by(exp) |>
+  group_map(calc_alpha_omega) |>
+  bind_rows() |>
+  rename(Rating = experiment,
+         N = n_raters,
+         alpha = alpha,
+         omega = omega_t)
+
+alpha_omega_table <- alpha_omega_std |>
+  bind_rows(alpha_omega_unstd) |>
+  bind_rows(alpha_omega_emo)
+
+
+## --- --- --- --- --- --- --- --- --- --- --- ---
+## --- POINTS OF STABILITY ----
+## --- --- --- --- --- --- --- --- --- --- --- ---
 
 # --- STANDARDISED RATINGS
 
