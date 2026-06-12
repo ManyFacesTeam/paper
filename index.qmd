@@ -6,47 +6,225 @@ authors:
     affiliation: University of Stirling
     orcid: 0000-0002-1016-3829
     email: thora.bjornsdottir@stir.ac.uk
-    roles: 
-    - Conceptualization 
-    - Software 
-    - Validation 
-    - Visualization 
-    - Writing - original draft 
     corresponding: true
   - name: Vít Třebický
     affiliation: Charles University
     orcid: 0000-0003-1440-1772
-    email: vit.trebicky@natur.cuni.cz
-    roles: 
-    - Conceptualization 
-    - Software 
-    - Validation 
-    - Visualization 
-    - Writing - original draft 
+    email: vit.trebicky@ftvs.cuni.cz
     corresponding: true
-  - name: Lisa DeBruine
+  - name: Lisa M. DeBruine
     affiliation: University of Glasgow
     orcid: 0000-0002-7523-5539
     email: lisa.debruine@glasgow.ac.uk
-    roles: 
-    - Conceptualization 
-    - Software 
-    - Validation 
-    - Visualization 
-    - Writing - original draft 
-  - name: Iris Holzleitner
-    affiliation: UWE Bristol
+  - name: Iris J. Holzleitner
+    affiliation: University of the West of England, Bristol
     orcid: 0000-0002-1581-597X
     email: Iris.Holzleitner@uwe.ac.uk
-    roles: 
-    - Analysis
-    - Visualization 
-    - Writing - original draft 
+  - name: Chrystalle B. Y. Tan
+    affiliation: University of Leicester
+    orcid: 0000-0001-8557-2814
+    email: byt2@leicester.ac.uk
+  - name: Emily F. S. Berardi
+    affiliation: University of Guelph-Humber
+    email: berardiemily@gmail.com
+  - name: Stefana Juncu
+    affiliation: University of Portsmouth
+    orcid: 0000-0002-0479-283X
+    email: stefana.juncu@port.ac.uk
+  - name: Givago Silva Souza
+    affiliation: Federal University of Pará
+    orcid: 0000-0002-4525-3971
+    email: givagosouza@ufpa.br
+  - name: Jessica K. De La Mare
+    affiliation: University of Stirling
+    orcid: 0000-0003-3115-4726
+    email: jessica.delamare@stir.ac.uk
+  - name: Kok Wei Tan
+    affiliation: University of Reading Malaysia
+    orcid: 0000-0002-6212-7336
+    email: way5577@gmail.com
+  - name: Valeria Montelongo
+    affiliation: Universidad Nacional Autónoma de México
+    orcid: 0009-0002-6099-3991
+    email: valeriia.montelongo@gmail.com
+  - name: Adam Sandford
+    affiliation: University of Guelph-Humber; University of Guelph
+    orcid: 0000-0001-7619-1104
+    email: adam.lr.sandford@gmail.com
+  - name: Atakan M. Akil
+    affiliation: Eötvös Loránd University
+    email: atakan.akil@inserm.fr
+  - name: Maleah J. Carter
+    affiliation: National Institute of Mental Health; Carnegie Mellon University
+    orcid: 0009-0000-8903-9363
+    email: mjcarter@gmail.com
+  - name: Bastian Jaeger
+    affiliation: Tilburg University
+    orcid: 0000-0002-4398-9731
+    email: b.jaeger@uvt.nl
+  - name: Necdet Gurkan
+    affiliation: University of Missouri, St. Louis
+    orcid: 0000-0002-2626-1765
+    email: ngvm4@umsystem.edu
+  - name: Marc Tavares
+    affiliation: University of Guelph-Humber
+    orcid: 0009-0003-9077-4498
+    email: marc.tavares@guelphhumber.ca
+  - name: Ivana Jakovljev
+    affiliation: University of Novi Sad
+    email: ivana.jakovljev@ff.uns.ac.rs
+  - name: Shruti Japee
+    affiliation: National Institute of Mental Health
+    orcid: 0000-0003-3002-5017
+    email: japees@mail.nih.gov
+  - name: Bernhard Fink
+    affiliation: University of Vienna
+    orcid: 0000-0003-2739-5236
+    email: bernhard.fink@univie.ac.at
+  - name: Rachel Ripardo
+    affiliation: Federal University of Pará
+    orcid: 0000-0003-0515-7560
+    email: rcripardo@ufpa.br
+  - name: Michael Gaebler
+    affiliation: Max Planck Institute for Human Cognitive and Brain Sciences
+    orcid: 0000-0002-4442-5778
+    email: gaebler@cbs.mpg.de
+  - name: Arodi Farrera
+    affiliation: Universidad Nacional Autónoma de México
+    orcid: 0000-0001-9751-9906
+    email: arodi@iia.unam.mx
+  - name: Katrin Schaefer
+    affiliation: University of Vienna
+    orcid: 0000-0002-0173-3092
+    email: katrin.schaefer@univie.ac.at
+  - name: Noa Halevy
+    affiliation: Ben-Gurion University of the Negev; Bar-Ilan University
+    email: noa1309@gmail.com
+  - name: Valentina Proietti
+    affiliation: University of the Fraser Valley
+    orcid: 0000-0001-9055-7328
+    email: valentina.proietti@ufv.ca
+  - name: Gursimrat Kaur Gill
+    affiliation: University of the Fraser Valley
+    email: gursimratk59@gmail.com
+  - name: Vicky L. Walker
+    affiliation: University of Reading
+    orcid: 0009-0003-8660-1498
+    email: v.l.walker@pgr.reading.ac.uk
+  - name: Emily Teresa Seeligmüller
+    affiliation: Witten/Herdecke University
+    orcid: 0009-0000-9605-2996
+    email: Emily.seeligmueller@uni-wh.de
+  - name: Jasmine K. W. Lee
+    affiliation: University of Reading Malaysia
+    orcid: 0000-0002-1126-0583
+    email: j.k.lee@reading.edu.my
+  - name: Christopher A. Thorstenson
+    affiliation: Rochester Institute of Technology
+    orcid: 0000-0003-2268-8910
+    email: catpocs@rit.edu
+  - name: Niv Reggev
+    affiliation: Ben-Gurion University of the Negev
+    orcid: 0000-0002-5734-7457
+    email: reggevn@bgu.ac.il
+  - name: Anthony J. Lee
+    affiliation: University of Stirling
+    orcid: 0000-0001-8288-3393
+    email: anthony.lee@stir.ac.uk
+  - name: Karen Lander
+    affiliation: University of Manchester
+    orcid: 0000-0002-4738-1176
+    email: karen.lander@manchester.ac.uk
+  - name: Katie L. H. Gray
+    affiliation: University of Reading
+    orcid: 0000-0002-6071-4588
+    email: k.l.h.gray@reading.ac.uk
+  - name: Simon M. Hofmann
+    affiliation: Max Planck Institute for Human Cognitive and Brain Sciences
+    orcid: 0000-0003-0958-501X
+    email: simon.hofmann@cbs.mpg.de
+  - name: Ekam K. Banipal
+    affiliation: University of the Fraser Valley
+    orcid: 0009-0007-3875-2776
+    email: ekam.banipal@student.ufv.ca
+  - name: Ai-Suan Lee
+    affiliation: Sunway University
+    orcid: 0000-0001-7977-177X
+    email: aisuanl@sunway.edu.my
+  - name: Hoo Keat Wong
+    affiliation: University of Nottingham Malaysia
+    orcid: 0000-0002-0387-3590
+    email: khzwhk@nottingham.edu.my
+  - name: Rachel A. Searston
+    affiliation: The University of Adelaide
+    orcid: 0000-0001-7295-8021
+    email: rachel.searston@adelaide.edu.au
+  - name: Hadas Wardi
+    affiliation: Ben-Gurion University of the Negev
+    email: wardi@post.bgu.ac.il
+  - name: Luis Carlos Pereira Monteiro
+    affiliation: Federal University of Pará
+    orcid: 0000-0002-0416-5182
+    email: luis.monteiro@icb.ufpa.br
+  - name: Shawn N. Geniole
+    affiliation: University of the Fraser Valley
+    orcid: 0000-0001-9866-1920
+    email: shawn.geniole@ufv.ca
+  - name: Carmel A. Levitan
+    affiliation: Occidental College
+    orcid: 0000-0001-5403-444X
+    email: levitan@oxy.edu
+  - name: Jaroslava Varella Valentova
+    affiliation: University of São Paulo
+    orcid: 0000-0002-2113-3385
+    email: jaroslava@usp.br
+  - name: Thorsten M. Erle
+    affiliation: Tilburg University
+    orcid: 0000-0003-3477-5106
+    email: t.m.erle@tilburguniversity.edu
+  - name: Scott P. Jones
+    affiliation: University of the West of England, Bristol
+    orcid: 0000-0001-5516-4385
+    email: Scott6.jones@uwe.ac.uk
+  - name: J. Brendan Ritchie
+    affiliation: University of Lethbridge
+    orcid: 0000-0002-2402-8724
+    email: brendan.ritchie@uleth.ca
+  - name: Marco Antonio Correa Varella
+    affiliation: University of São Paulo
+    orcid: 0000-0002-7274-7360
+    email: macvarella@gmail.com
+  - name: Bojana M. Dinić
+    affiliation: University of Novi Sad
+    orcid: 0000-0002-5492-2188
+    email: bojana.dinic@ff.uns.ac.rs
+  - name: Gijsbert Bijlstra
+    affiliation: Radboud University
+    orcid: 0000-0002-0827-7376
+    email: gijs.bijlstra@ru.nl
+  - name: Anthony B. Ciston
+    affiliation: Max Planck Institute for Human Cognitive and Brain Sciences
+    orcid: 0009-0007-5335-5429
+    email: ciston@cbs.mpg.de
+  - name: Sarah L. Shrimpton
+    affiliation: Liverpool John Moores University
+    orcid: 0000-0001-7079-9733
+    email: s.l.shrimpton@ljmu.ac.uk
+  - name: Ana I. Gheorghiu
+    affiliation: University of Portsmouth
+    orcid: 0000-0001-9102-4312
+    email: ana.gheorghiu@port.ac.uk
+  - name: Jan Philipp Röer
+    affiliation: Witten/Herdecke University
+    orcid: 0000-0001-7774-3433
+    email: jan.roeer@uni-wh.de
+  - name: Sonja Windhager
+    affiliation: University of Vienna
+    orcid: 0000-0003-1809-8678
+    email: sonja.windhager@univie.ac.at
 bibliography: references.bib
 csl: apa.csl
 ---
-
-<!-- *** to add rest of team as authors w/ CRediT -->
 
 
 ```{r}
@@ -320,6 +498,7 @@ For height, we ensured all data were presented in centimeters, and for weight, w
 ```{r eval=FALSE}
 #| label: tbl-model-demog
 #| tbl-cap: Summary of model age, height, and weight self-report, separated by gender
+#| tbl-subcap: Note. See @fig-model-age in SM for histograms
 
 data_models |>
   mutate(gender = gender_rec) |>
@@ -379,7 +558,7 @@ RAW images were processed using webmorphR [@debruine_reproducible_2022], which f
 * This aligned image was saved as a lossless PNG using imagemagick default settings (e.g., sRGB colour space).
 * A white balance correction was applied to the resulting images, calculated from the mean RGB values in the 25x25 pixel top-right corner patch (white background) ^[We did not fully colour-calibrate the images here (see Discussion) but future researchers may wish to do so.] 
 * These images were converted to JPEGs with a quality setting of 75 to reduce file size and enable interoperability across browsers and devices for stimulus display online.
-These processed images are available alongside the full set of RAW images in the image database [**LINK**].
+These processed images are available alongside the full set of RAW images in the image database [**link to be added**].
   
 ```{r}
 #| label: fig-img-processing
@@ -518,7 +697,7 @@ To further check inter-rater agreement, we used both Cronbach’s alpha (α) and
   
 #### Points of stability
 
-To determine the number of raters required for stable ratings, we computed the point of stability [@hehman_assessing_2025], defined as the smallest sample size at which 95% of resampled means fall within a corridor of stability of ±0.5 points and do not again exceed it. As shown in @fig-pos, the ratings of standardized images reached stability between 37 and 44 raters, the ratings of unstandardized images between 37 and 41 raters, and emotion intensity ratings of standardized emotional faces between 29 and 50 raters.
+To determine the number of raters required for stable ratings, we computed the point of stability [@hehman_assessing_2025], defined as the smallest sample size at which 95% of resampled means fall within a corridor of stability of ±0.5 points and do not again exceed it.^[Note that we declared stability when the *upper* bound crossed inside the threshold, whereas Hehman and colleagues declare stability when the lower/nearer bound crosses inside the threshold.] As shown in @fig-pos, the ratings of standardized images reached stability between 37 and 44 raters, the ratings of unstandardized images between 37 and 41 raters, and emotion intensity ratings of standardized emotional faces between 29 and 50 raters.
 
 ```{r}
 #| label: fig-pos
@@ -553,7 +732,7 @@ In this section, we report the descriptive statistics for ratings of the neutral
   
 ##### Standardized and unstandardized neutral trait ratings
 
-For standardized neutral faces, trustworthiness, dominance, and memorability ratings were approximately normally distributed and showed similar patterns of central tendency and variance. In contrast, attractiveness ratings were somewhat right-skewed, reflected in a relatively lower mean, while gender-typicality ratings were left-skewed, with a relatively higher mean (see @fig-neu-hist).
+For standardized neutral faces, trustworthiness, dominance, and memorability ratings were approximately normally distributed and showed similar patterns of central tendency and variance. In contrast, attractiveness ratings were somewhat right-skewed, whereas gender-typicality ratings were left-skewed (see @fig-neu-hist).
 
 ```{r}
 std_neutral <- data_exp |>
@@ -836,7 +1015,7 @@ if (age_by_face_p < .001) {
 }
 ```
 
-The distribution of raters’ perceptions of models’ ages is shown in @fig-age-hist. 26-30 years was the most-chosen age across raters and models. The correlation between models’ mode perceived age and actual age was strong,*r*(`r age_by_face_df`) = `r age_by_face_r`, p `r p_comp` `r age_by_face_p`. 
+The distribution of raters’ perceptions of models’ ages is shown in @fig-age-hist (see @fig-model-age in SM for actual age). The most chosen age across raters and models was 26–30 years. The correlation between models’ mode perceived age and actual age was strong,*r*(`r age_by_face_df`) = `r age_by_face_r`, p `r p_comp` `r age_by_face_p`. 
 
 ```{r}
 #| label: fig-age-hist
@@ -901,8 +1080,63 @@ We thank all of our participants, both models and raters, who made this research
   
 This research was funded by a Biotechnology and Biological Sciences Research Council International Partnerships Funding grant (320172; via University of Glasgow MVLS), awarded to Lisa DeBruine, Vít Třebický, and R. Thora Bjornsdottir, and a Czech Science Foundation grant (GAČR 23-05408S) awarded to Vít Třebický.
 With respect to the contributions of J. Brendan Ritchie, Maleah J. Carter, and Shruti Japee, this research was supported in part by the Intramural Research Program of the National Institutes of Health (NIH) (ZIAMH 002909). The contributions of the NIH authors are considered Works of the United States Government. The findings and conclusions presented in this paper are those of the authors and do not necessarily reflect the views of the NIH or the U.S. Department of Health and Human Services.
+  
+## CRediT statement
+Note that the first three authors led the current project, and the order of all other authors listed on the manuscript was randomized. Each author's contributions are noted via CRediT.
+  
+```{r message=FALSE}
+read_csv("author_CRediT.csv") |>
+  select("Name", "Contributions") |>
+  flextable() |>
+  flextable::width(j = 1, 3)
+```
+
 
 # Supplementary Material
+
+```{r warning=FALSE}
+#| label: fig-model-age
+#| fig-cap: Histogram of model age, height, and weight in Phase 1
+#| fig-width: 8
+#| fig-height: 10
+
+p_age <- age_by_face |> 
+  ggplot(aes(x = age_actual)) +
+  geom_histogram(binwidth = 1, fill = "orchid", alpha = .8) +
+  scale_x_continuous(breaks = seq(15, 85, 5)) +
+  labs(title = "A Model self-reported age",
+       x = "age (years)", 
+       y = "count") +
+    theme_minimal() +
+    theme(axis.text = element_text(size = 10),
+        axis.title = element_text(size = 12, face = "plain"),
+        title = element_text(size = 12)) 
+
+p_height <- data_models |>
+  ggplot(aes(x = height_cm)) +
+  geom_histogram(binwidth = 1, fill = "#F7AE8F", alpha = .8) +
+  labs(title = "B Model self-reported height",
+       x = "height (cm)", 
+       y = "count") +
+    theme_minimal() +
+    theme(axis.text = element_text(size = 10),
+        axis.title = element_text(size = 12, face = "plain"),
+        title = element_text(size = 12)) 
+
+p_weight <- data_models |>
+  ggplot(aes(x = weight_kg)) +
+  geom_histogram(binwidth = 1, fill = "orange", alpha = .8) +
+  labs(title = "C Model self-reported weight",
+       x = "weight (kg)", 
+       y = "count") +
+    theme_minimal() +
+    theme(axis.text = element_text(size = 10),
+        axis.title = element_text(size = 12, face = "plain"),
+        title = element_text(size = 12)) 
+
+(p_age) / (p_height) / (p_weight) 
+
+```
 
 ```{r}
 #| label: fig-rt-distribution
@@ -919,9 +1153,13 @@ med_rt |>
  # coord_cartesian(xlim = c(0, 8000)) +
  # scale_x_continuous(expand = expansion(mult = 0)) +
   scale_x_continuous(breaks = seq(0, 10000, 500)) +
-  labs(x = "median RT (ms)",
+  labs(title = "Median rater reaction time",
+       x = "median RT (ms)",
        y = "count (per 100ms bin)")  +
-  theme_minimal()
+  theme_minimal() +
+    theme(axis.text = element_text(size = 10),
+        axis.title = element_text(size = 12, face = "plain"),
+        title = element_text(size = 12)) 
 ```
 
 ```{r}
@@ -932,9 +1170,13 @@ data_quest |>
   ggplot(aes(x = age)) +
   geom_histogram(binwidth = 1, fill = "orchid", alpha = .8) +
   scale_x_continuous(breaks = seq(15, 85, 5)) +
-  labs(x = "age (years)", 
+  labs(title = "Rater self-reported age",
+       x = "age (years)", 
        y = "count") +
-    theme_minimal()
+    theme_minimal() +
+    theme(axis.text = element_text(size = 10),
+        axis.title = element_text(size = 12, face = "plain"),
+        title = element_text(size = 12)) 
 ```
 
 ```{r}
