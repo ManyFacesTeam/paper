@@ -239,7 +239,9 @@ library(flextable)
 #devtools::install_github("debruine/webmorphR@dev")
 #library(webmorphR)
 
-set_flextable_defaults(digits = 2)
+set_flextable_defaults(digits = 2,
+                       na_str = "",
+                       nan_str = "")
 theme_set(theme_bw(base_size = 14))
 
 source("code/custom_functions.R")
@@ -440,12 +442,13 @@ model_n <- nrow(data_models)
 ```
 
 `r model_n` total models provided their images, following withdrawals and exclusions for poor image quality (as determined by the researchers collecting the images and the core team). @tbl-images-per-type details the number of models for each kind of photo. Example images are shown in @fig-img-examples. Images are freely available for research use and can be accessed via UK Data Service ReShare: [**link to be added**]. Note that researchers must agree to our terms of use to access the database, in line with ethical constraints (see [**link**]).
-  
-```{r}
-## TO UPDATE W/ ALL COUNTS (INCLUDING DIFFERENT ANGLES) & MORE READABLE LABELS ***
 
+
+```{r}
 #| label: tbl-images-per-type
 #| tbl-cap: The number of images available for each image type.
+
+## TO UPDATE W/ ALL COUNTS (INCLUDING DIFFERENT ANGLES) & MORE READABLE LABELS ***
 
 emo_levels <- c(neu = "neutral", 
               #  nat = "natural",
@@ -471,11 +474,11 @@ image_type_n |>
 ```
 
 ```{r}
-#*** UPDATE IMAGE LABELS TO BE GRAMMATICALLY CONSISTENT, ADD 'NATURAL' 
-
 #| label: fig-img-examples
 #| fig-cap: Example images of each level of standardization, angle, and expression
 #| fig-alt: "A 7x6 grid of pictures of a woman in a white t-shirt with a white headband, showing different angles and expressions. Top labels: neutral, angry, disgusted, fearful, happy, sad, surprised. Side labels: standardized front, standardized left 90 (side profile), standardized left 45 (three-quarter profile), standardized right 45, standardized right 90, unstandardized front."
+
+#*** UPDATE IMAGE LABELS TO BE GRAMMATICALLY CONSISTENT, ADD 'NATURAL' 
 
 knitr::include_graphics("fig/img-examples.png")
 ```
@@ -495,10 +498,9 @@ For gender and race/ethnicity, words presented in languages other than English w
   
 For height, we ensured all data were presented in centimeters, and for weight, we ensured that all data were presented in kilograms. Models could report height and weight in metric or imperial units, so we converted from imperial to metric where required. We also sanity-checked the reported units, assuming heights > 100 to be in centimeters and those < 100 to be in inches, and weights < 80 to be in kilograms. Any non-entries of height or weight for a model was recoded as NA.
 
-```{r eval=FALSE}
+```{r}
 #| label: tbl-model-demog
 #| tbl-cap: Summary of model age, height, and weight self-report, separated by gender
-#| tbl-subcap: Note. See @fig-model-age in SM for histograms
 
 data_models |>
   mutate(gender = gender_rec) |>
@@ -539,6 +541,8 @@ data_models |>
           
 ```
   
+*Note.* See @fig-model-age in SM for histograms.
+
 ## Phase 2: Validation/norming data
 
 We next obtained subjective ratings of a subset of the photos (front-facing) to validate the emotion expressions (their perceived emotion category and intensity) and collect norming data on central social perceptions, namely perceived attractiveness, dominance, trustworthiness, gender-typicality, memorability, and age. We chose these ratings due to their central importance in the person perception, face recognition, and emotion perception literatures [e.g., @bainbridge_intrinsic_2013, @jack_four_2016, @oosterhof_functional_2008; @perrett_your_2017; @sutherland_social_2013]. We preregistered this study on the OSF (<https://osf.io/4d5v9>) in April 2025.
@@ -580,11 +584,11 @@ The number of stimuli was determined by the number of models recruited across th
 
 
 ```{r}
-# *** CHANGE LABELS IN IMAGE TO BE GRAMMATICALLY CONSISTENT ***
-
 #| label: fig-stim-examples
 #| fig-cap: An example of each type of stimulus, with the total number of stimuli of that type in parentheses.
 #| fig-alt: "Example face images for the 8 types of stimuli: unstandardized (177), neutral (205), angry (187), disgusted (184), fearful (175), happy (199), sad (183), surprised (184)"
+
+# *** CHANGE LABELS IN IMAGE TO BE GRAMMATICALLY CONSISTENT ***
 
 knitr::include_graphics("fig/stim-types.png")
 ```
@@ -680,7 +684,8 @@ Next, we examined the number of raters required for ratings to reach stable leve
 ```{r}
 #| label: fig-icc-cos
 #| fig-cap: Corridors of stability for ICC
-#| fig-subcap: Note. Dashed horizontal lines indicate ICC(2,k) of 0.75 and 0.90, respectively.
+#| fig-subcap:
+#|   - "Note. Dashed horizontal lines indicate ICC(2,k) of 0.75 and 0.90, respectively."
 #| fig-height: 15
 #| fig-width: 10
 
@@ -702,7 +707,8 @@ To determine the number of raters required for stable ratings, we computed the p
 ```{r}
 #| label: fig-pos
 #| fig-cap: Points of stability for ratings
-#| fig-subcap: Note. Dashed horizontal lines indicate corridor of stability at +/- 0.5 points. Vertical lines indicate point of stability.
+#| fig-subcap:
+#|   - "Note. Dashed horizontal lines indicate corridor of stability at +/- 0.5 points. Vertical lines indicate point of stability."
 #| fig-height: 15
 #| fig-width: 10
 
@@ -789,7 +795,8 @@ unstd_MSD <- unstd_neutral |>
 ```{r}
 #| label: fig-neu-hist
 #| fig-cap: Histograms and descriptive statistics for trait ratings of standardized and unstandardized neutral faces
-#| fig-subcap: Note. Values in top right of each panel represent M (SD)
+#| fig-subcap:
+#|   - "Note. Values in top right of each panel represent M (SD)."
 #| fig-width: 8
 #| fig-height: 8
 
@@ -868,7 +875,8 @@ emo_cat <- data_exp |>
 ```{r}
 #| label: fig-emo-freq
 #| fig-cap: Emotion categorization frequencies
-#| #fig-subcap: Note. Downward arrows indicate correct categorizations (categorizations matching intended model expression).
+#| fig-subcap:
+#|   - "Note. Downward arrows indicate correct categorizations (categorizations matching intended model expression)."
 #| fig-width: 8
 #| fig-height: 5.5
 
@@ -944,7 +952,8 @@ emo_MSD <- emo_int |>
 ```{r}
 #| label: fig-intensity-hist
 #| fig-cap: Histograms of emotion intensity ratings
-#| fig-subcap: Note. Values in top right of each panel represent M (SD)
+#| fig-subcap:
+#|   - "Note. Values in top right of each panel represent M (SD)."
 #| fig-width: 8
 #| fig-height: 5.5
 
@@ -1084,7 +1093,9 @@ With respect to the contributions of J. Brendan Ritchie, Maleah J. Carter, and S
 ## CRediT statement
 Note that the first three authors led the current project, and the order of all other authors listed on the manuscript was randomized. Each author's contributions are noted via CRediT.
   
-```{r message=FALSE}
+```{r}
+#| message: false
+
 read_csv("author_CRediT.csv") |>
   select("Name", "Contributions") |>
   flextable() |>
@@ -1141,7 +1152,8 @@ p_weight <- data_models |>
 ```{r}
 #| label: fig-rt-distribution
 #| fig-cap: Median reaction time distribution in Phase 2
-#| fig-subcap: Note. Red dashed line indicates exclusion cutoff
+#| fig-subcap:
+#|   - "Note. Red dashed line indicates exclusion cutoff."
 
 med_rt |> 
   ggplot(aes(x = med_rt)) +
@@ -1182,7 +1194,6 @@ data_quest |>
 ```{r}
 #| label: tbl-exclusions
 #| tbl-cap: The number of raters excluded from analysis in Phase 2
-#| tbl-subcap: Note. Multiple raters met more than one exclusion criterion; therefore, the counts for individual criteria do not sum to the total number of raters excluded.
 
 exclusions |> 
   summarise(
@@ -1201,11 +1212,11 @@ exclusions |>
   flextable::width(j = 1, 2)
 
 ```
+*Note.* Multiple raters met more than one exclusion criterion; therefore, the counts for individual criteria do not sum to the total number of raters excluded.
 
 ```{r}
 #| label: tbl-raters-per-task
 #| tbl-cap: Number of raters per task in Phase 2
-#| tbl-subcap: Note. The emotion rating task was broken into 6 counterbalanced versions
 
 # make task names more readable
 data_exp_rename <- data_exp |>
@@ -1245,7 +1256,7 @@ data_exp_rename |>
                     raters = "N") |>
   flextable::width(j = 1, 2)
 ```
-
+*Note*. The emotion rating task was broken into 6 counterbalanced versions.
 
 ```{r}
 #| label: tbl-raters-country
