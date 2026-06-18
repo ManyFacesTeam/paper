@@ -330,23 +330,23 @@ Faces are rich visual stimuli, playing a key role in human social perception. Th
   
 ### Existing face databases
 
-Many face stimulus databases exist, created for various purposes and used to address a variety of research questions. Many of these are available for research purposes [see e.g., the face image meta-database to search many of these, @workman_face_2021], allowing access to a broad variety of face stimuli, well-suited to address questions in a given subfield. For example, there are many different databases in which photographed individuals (referred to as targets or models) display different facial expressions of emotion [e.g., @ebner_facesdatabase_2010; @van_der_schalk_moving_2011, of use in affective science], appear in varying lighting and angles [e.g., @burton_glasgow_2010; @gao_cas-peal_2008, useful for person recognition and forensic research], or belong to various age or racial/ethnic groups [e.g., @ma_chicago_2015; @minear_lifespan_2004; valuable for social perception research]. Such databases are highly valuable research resources.
+Many face stimulus databases exist, created for various purposes and used to address a variety of research questions. Many of these are available for research purposes [see e.g., the face image meta-database to search many of these, @workman_face_2021], allowing access to a broad variety of face stimuli, well-suited to address questions in a given subfield. For example, there are many different databases in which photographed individuals (referred to as targets or models) display different facial expressions of emotion [e.g., @ebner_facesdatabase_2010; @van_der_schalk_moving_2011, of use in affective science], appear in varying lighting and angles [e.g., @burton_glasgow_2010; @gao_cas-peal_2008, useful for person recognition and forensic research], or belong to various age or racial/ethnic groups [e.g., @ma_chicago_2015; @minear_lifespan_2004, valuable for social perception research]. Such databases are highly valuable research resources.
   
 However, many studies tend to rely on a small number of those stimulus databases, which introduces potential problems. For example, as of May 2026 on Google Scholar, at least 4050 published papers cite the Karolinska Directed Emotional Faces [@lundqvist_karolinska_1998], 4477 cite the NimStim Set of Facial Expressions [@tottenham_nimstim_2009], 2676 cite the Chicago Face Database [@ma_chicago_2015], and 3304 the Radboud Faces Database  [@langner_presentation_2010]. Although citation counts are not a direct measure of the use of these databases, they nonetheless indicate their popularity. This frequent (over)use of the same sets of stimuli can compromise generalizability when various research questions are tested on only a limited sample of face images from specific backgrounds [@debruine_reproducible_2022; @yarkoni_generalizability_2022]. Participants, especially those participating online, may also become familiar with frequently used stimuli, potentially introducing biases to their responses.  
   
-Not all research involving face images uses stimuli from published databases. It is common for researchers to purposefully collect images themselves, but these stimulus sets are seldom openly shared (e.g., due to ethical limitations). Although this circumvents the issues with frequently-used databases, it introduces its own set of problems. Chiefly, face images collected by researchers for their own research use are often insufficiently documented. Although the resulting images may be described and/or illustrated with an example, the process of image collection is rarely described in adequate detail [consistent with broader patterns of insufficient methods reporting; e.g., @damian_transparency_2022; @zogmaister_assessing_2024]. This is often the case for even those databases openly available for research use. This lack of image acquisition (and processing) methods documentation limits transparency, replication attempts, and assessments of results’ validity [as under-characterization of stimuli can preclude identification of issues like confounding factors; see @trebicky_grim_2024]. Furthermore, different research teams often employ protocols that can differ significantly from each other in a plethora of major and minor details, including hair (e.g., free hairstyle or pulled back; facial hair allowed or not), facial accessories, makeup, lighting conditions, and colour of shirt worn. These often-unreported details further hinder comparisons between different studies. Here, we introduce a detailed image collection protocol and a resulting novel database, with the aim to provide a new and growing research resource and a transparent and rigorously documented procedure.
+Not all research involving face images uses stimuli from published databases. It is common for researchers to purposefully collect images themselves, but these stimulus sets are seldom openly shared (e.g., due to ethical limitations). Although this circumvents the issues with frequently-used databases, it introduces its own set of problems. Chiefly, face images collected by researchers for their own research use are often insufficiently documented. Although the resulting images may be described and/or illustrated with an example, the process of image collection is rarely described in adequate detail [consistent with broader patterns of insufficient methods reporting, e.g., @damian_transparency_2022; @zogmaister_assessing_2024]. This is often the case for even those databases openly available for research use. This lack of image acquisition (and processing) methods documentation limits transparency, replication attempts, and assessments of results’ validity [as under-characterization of stimuli can preclude identification of issues like confounding factors, see @trebicky_grim_2024]. Furthermore, different research teams often employ protocols that can differ significantly from each other in a plethora of major and minor details, including hair (e.g., free hairstyle or pulled back; facial hair allowed or not), facial accessories, makeup, lighting conditions, and colour of shirt worn. These often-unreported details further hinder comparisons between different studies. Here, we introduce a detailed image collection protocol and a resulting novel database, with the aim to provide a new and growing research resource and a transparent and rigorously documented procedure.
   
 In many databases (both publicly available and not), there are also limitations in the diversity of stimuli. For example, many include only images of individuals who self-identify as White or Western [e.g., see @cook_why_2021; see also @martinez_facecraft_2025 for a discussion of the potential reification of race in face research]. This reinforces the centering of Whiteness and Western culture in psychological research, importantly limiting the ecological validity and generalizability of conclusions [see also @henrich_weirdest_2010; @roberts_challenging_2023]. Recently created databases have sought to address this, specifically collecting images of multiracial/multi-ethnic [@chen_broadening_2021; @ma_chicago_2021; @meyers_hawaii_2024] and non-Western samples, for example [e.g., @bastanfard_iranian_2007; @chung_development_2019; @courset_caucasian_2018; @saribay_bogazici_2018; @trzewik_israeli_2025; @yang_tsinghua_2020]. Continuing work is needed to further diversify the pool of available face research stimuli. Many world regions and ancestries remain underrepresented (e.g., South American, East African, First Nations, Australian Aboriginal people). This may be due, in part, to resource limitations: Equipment and setups for collecting images suitable for research use can be prohibitively expensive and complex, making database collection not feasible for everyone and everywhere, thereby limiting database diversity. Additionally, researchers with the necessary equipment may be constrained in terms of the diversity of their available participant samples’ ancestry and cultural heritage (which may shape visible facial features). The image collection protocol we introduce aims to address these issues, for example by using relatively affordable equipment and a simple set-up, and our resulting database includes models from a variety of world regions.
   
-Extant databases’ diversity is often limited not only in the ethnic or cultural backgrounds of the individuals they depict, but also in the diversity of images and information that they include. For example, face image databases often include little or no self-reported information from models [e.g., only gender and broad racial/ethnic category labels; @ma_chicago_2015]. Many databases are also limited in the number of individual models pictured, and/or in the number or kinds of images available per model (e.g., variations in expression, photo angle, standardization). This likely results from the varying aims of different databases – that is, whether the focus was on a diversity of model identities represented [e.g., @bainbridge_intrinsic_2013; @long_database_2023] or a diversity of expressions or viewpoints [e.g., @chung_development_2019; @courset_caucasian_2018]. A diversity of databases is of course valuable, and no one database can include everything. However, we developed our protocol to include the collection of a variety of types of images and model self-report information, to maximize the utility of the resulting database for a variety of research purposes. We also recruited models across twenty labs, and we make the image collection protocol openly available, to enable the collection of images from a large sample of models. 
+Extant databases’ diversity is often limited not only in the ethnic or cultural backgrounds of the individuals they depict, but also in the diversity of images and information that they include. For example, face image databases often include little or no self-reported information from models [e.g., only gender and broad racial/ethnic category labels, @ma_chicago_2015]. Many databases are also limited in the number of individual models pictured, and/or in the number or kinds of images available per model (e.g., variations in expression, photo angle, standardization). This likely results from the varying aims of different databases – that is, whether the focus was on a diversity of model identities represented [e.g., @bainbridge_intrinsic_2013; @long_database_2023] or a diversity of expressions or viewpoints [e.g., @chung_development_2019; @courset_caucasian_2018]. A diversity of databases is of course valuable, and no one database can include everything. However, we developed our protocol to include the collection of a variety of types of images and model self-report information, to maximize the utility of the resulting database for a variety of research purposes. We also recruited models across twenty labs, and we make the image collection protocol openly available, to enable the collection of images from a large sample of models. 
   
 Face image databases are also largely fixed. That is, once collected, the number of stimuli available does not change. There are some exceptions to this, such as multiple waves of additions to the Chicago Face Database [@lakshmi_india_2021; @ma_chicago_2021]. Continued additions to databases are not the norm, however. This not only constrains the number of stimuli in any given database, increasing the likelihood of the frequent reuse of any individual stimulus, but can also render some databases obsolete over time (e.g., due to very dated model appearance/styling). Here, our openly available protocol will straightforwardly enable future additions to our database.
   
 ### Open Science considerations
 
-Open and transparent methods are essential for fully understanding, evaluating, and replicating research [see, e.g., @hales_improving_2019; @klein_practical_2018; @lindsay_seven_2020; see also @govaart_sustainability_2022, for discussion of sustainability). With increased discussion of and prioritization of open science practices, methods reporting has become more open and accessible, with researchers sharing materials such as questionnaire wording, stimuli, and programming scripts [e.g., @zogmaister_assessing_2024]. Despite this, the reporting of face image database collection procedures often lacks crucial details for full transparency and reproducibility. This matters because differences in often-undocumented details (e.g., focal length) can importantly affect faces’ appearance, subsequently impacting perceptions of them [e.g., @trebicky_focal_2016; see @trebicky_grim_2024 for further discussion]. We address this here, with our openly shared image collection protocol, image processing pipeline, and image rating procedure.
+Open and transparent methods are essential for fully understanding, evaluating, and replicating research [e.g., @hales_improving_2019; @klein_practical_2018; @lindsay_seven_2020, see also @govaart_sustainability_2022, for discussion of sustainability]. With increased discussion of and prioritization of open science practices, methods reporting has become more open and accessible, with researchers sharing materials such as questionnaire wording, stimuli, and programming scripts [e.g., @zogmaister_assessing_2024]. Despite this, the reporting of face image database collection procedures often lacks crucial details for full transparency and reproducibility. This matters because differences in often-undocumented details (e.g., focal length) can importantly affect faces’ appearance, subsequently impacting perceptions of them [e.g., @trebicky_focal_2016; see @trebicky_grim_2024 for further discussion]. We address this here, with our openly shared image collection protocol, image processing pipeline, and image rating procedure.
   
-In addition to more rigorous and open methods documentation, Big Team Science (i.e., multi-lab) endeavours and large-scale collaborations are now recognized as a vital part of improving science, including reproducibility and replicability [see forscher_benefits_2023]. Within psychology, multiple such initiatives have importantly contributed to addressing a variety of research questions, improving diversity and generalizability in the field [e.g., @jones_which_2021's investigation of the applicability of a key social perception model across various world regions]. Such an approach has yet to be applied to face stimulus collection, but it represents an opportunity to address many of the limitations of face image databases and their documentation.
+In addition to more rigorous and open methods documentation, Big Team Science (i.e., multi-lab) endeavours and large-scale collaborations are now recognized as a vital part of improving science, including reproducibility and replicability [see @forscher_benefits_2023]. Within psychology, multiple such initiatives have importantly contributed to addressing a variety of research questions, improving diversity and generalizability in the field [e.g., @jones_which_2021's investigation of the applicability of a key social perception model across various world regions]. Such an approach has yet to be applied to face stimulus collection, but it represents an opportunity to address many of the limitations of face image databases and their documentation.
   
 ### The current work
 
@@ -370,7 +370,7 @@ Within the broader ManyFaces consortium,^[A call to join the consortium was init
   
 #### Protocol development 
 
-We curated a set of equipment and developed a protocol for collecting standardized, reproducible images of faces for research. Following a survey among the ManyFaces members, we constructed the protocol for the collection of a variety of images that would be useful for diverse research questions. Specifically, we included images varying in their standardization of appearance (standardized and unstandardized, e.g., white t-shirt and hair pulled back vs. clothing and hair as worn by the participant/model on that day), viewing angle (frontal, profile, ¾), and facial expression [neutral, natural, angry, disgusted, fearful, happy, sad, surprised; similar to extant facial expression databases, e.g., @ebner_facesdatabase_2010; @lundqvist_karolinska_1998; see also @ekman_emotions_1999].
+We curated a set of equipment and developed a protocol for collecting standardized, reproducible images of faces for research. Following a survey among the ManyFaces members, we constructed the protocol for the collection of a variety of images that would be useful for diverse research questions. Specifically, we included images varying in their standardization of appearance (standardized and unstandardized, e.g., white t-shirt and hair pulled back vs. clothing and hair as worn by the participant/model on that day), viewing angle (frontal, profile, ¾), and facial expression [neutral, natural, angry, disgusted, fearful, happy, sad, surprised, similar to extant facial expression databases, e.g., @ebner_facesdatabase_2010; @lundqvist_karolinska_1998, see also @ekman_emotions_1999].
   
 Prior to beginning data collection, the ManyFaces team pre-tested the protocol to ensure clarity of instructions and consistency of images collected across sites. In the pre-test, volunteering members of the ManyFaces team were provided with the equipment and early drafts of the protocol to follow (i.e., collect images of a model or two) and report on issues via comments and edits to the protocol document file, online meetings, and surveys. We revised the protocol to address issues that arose (e.g., revised facial expression elicitation instructions, clarified camera settings). The version of the protocol we used in the current work can be found on the OSF (<https://osf.io/qxwvz>; see also <https://osf.io/nkahx> for all materials). In sum, the protocol detailed the following:
   
@@ -380,7 +380,7 @@ The protocol defined the categories of images in terms of their standardization 
 
 * Standardization of Appearance. In the *standardized* images, models wore a white crew neck t-shirt, had their hair pulled back or covered, included no adornments/accessories (excepting those that could not be removed for cultural reasons), and wore minimal or no makeup (models were informed about this beforehand). In contrast, *unstandardized* images showed models in their own clothing, with their hair as they came into the lab, and with adornments, except for glasses or anything that obscured the face or neck.  
 * Viewing Angle. *Full frontal portraits* showed models facing the camera, *left and right profile portraits* showed each side of models’ faces in profile, and *left and right ¾ portraits* showed models’ faces at a 45-degree angle from the axis of the camera.  
-* Facial Expression. *Neutral* images were of models refraining from making any facial expression, *natural* images displayed a natural expression for the model, and each facial expression of emotion displayed the expression the model would make if they were feeling the specified emotion [models instructed e.g., “face the camera with the expression you would make if you were feeling happy”, similar to instructions in the NimStim database, e.g., “make a happy face”, albeit with greater emphasis on expressions reflecting internal feelings; @tottenham_nimstim_2009].
+* Facial Expression. *Neutral* images were of models refraining from making any facial expression, *natural* images displayed a natural expression for the model, and each facial expression of emotion displayed the expression the model would make if they were feeling the specified emotion [models instructed e.g., “face the camera with the expression you would make if you were feeling happy”, similar to instructions in the NimStim database, e.g., “make a happy face”, albeit with greater emphasis on expressions reflecting internal feelings, @tottenham_nimstim_2009].
   
 ##### Image prioritisation
 
@@ -476,6 +476,7 @@ image_type_n |>
 ```{r}
 #| label: fig-img-examples
 #| fig-cap: Example images of each level of standardization, angle, and expression
+#| fig-cap-location: top
 #| fig-alt: "A 7x6 grid of pictures of a woman in a white t-shirt with a white headband, showing different angles and expressions. Top labels: neutral, angry, disgusted, fearful, happy, sad, surprised. Side labels: standardized front, standardized left 90 (side profile), standardized left 45 (three-quarter profile), standardized right 45, standardized right 90, unstandardized front."
 
 #*** UPDATE IMAGE LABELS TO BE GRAMMATICALLY CONSISTENT, ADD 'NATURAL' 
@@ -567,6 +568,7 @@ These processed images are available alongside the full set of RAW images in the
 ```{r}
 #| label: fig-img-processing
 #| fig-cap: "Image processing steps: (A) the raw image, (B) the image automatically delineated and cropped to a standard alignment, (C) white balance correction."
+#| fig-cap-location: top
 
 knitr::include_graphics("fig/img-processing.png")
 ```
@@ -586,6 +588,7 @@ The number of stimuli was determined by the number of models recruited across th
 ```{r}
 #| label: fig-stim-examples
 #| fig-cap: An example of each type of stimulus, with the total number of stimuli of that type in parentheses.
+#| fig-cap-location: top
 #| fig-alt: "Example face images for the 8 types of stimuli: unstandardized (177), neutral (205), angry (187), disgusted (184), fearful (175), happy (199), sad (183), surprised (184)"
 
 # *** CHANGE LABELS IN IMAGE TO BE GRAMMATICALLY CONSISTENT ***
@@ -648,7 +651,7 @@ A total of `r initial_raters` raters completed `r initial_completions` rating or
   
 Our pre-registered plan for data exclusions included removing raters who gave overly consistent responses, committed overly fast responses, self-reported not taking the study seriously when asked whether or not they completed the study authentically, and failed attention checks. In total, we excluded `r excluded_raters` raters for our pre-registered reasons for data exclusions. @tbl-exclusions in the Supplementary Material (SM) shows the number of raters we excluded for each of our reasons.
   
-We defined overly consistent responses as those raters who responded to at least 90% of trials identically. During agreement analyses (see Agreement Indicators for the Ratings, below), we found that `r additionally_excl` additional raters only gave two unique responses across all trials and also excluded these as overly consistent. We defined overly fast responses as those raters whose median reaction time fell below the 1st percentile of the overall distribution of median reaction times (see Figure S1 for the distribution of median reaction times). For our attention checks, the threshold for inclusion was to accurately complete six or more attention checks (i.e., participants were excluded if they failed more than one of the checks). Lastly, participants were excluded based on a self-reported honesty check, i.e., if they reported not taking the study seriously rather than taking it authentically. After these exclusions, we had `r final_raters` raters in our sample (with between 80 and 114 raters per rating task; see @tbl-raters-per-task in SM for the number of raters per task).
+We defined overly consistent responses as those raters who responded to at least 90% of trials identically. During agreement analyses (see Agreement Indicators for the Ratings, below), we found that `r additionally_excl` additional raters only gave two unique responses across all trials and also excluded these as overly consistent. We defined overly fast responses as those raters whose median reaction time fell below the 1st percentile of the overall distribution of median reaction times (see @fig-rt-distribution in SM for the distribution of median reaction times). For our attention checks, the threshold for inclusion was to accurately complete six or more attention checks (i.e., participants were excluded if they failed more than one of the checks). Lastly, participants were excluded based on a self-reported honesty check, i.e., if they reported not taking the study seriously rather than taking it authentically. After these exclusions, we had `r final_raters` raters in our sample (with between 80 and 114 raters per rating task; see @tbl-raters-per-task in SM for the number of raters per task).
   
 Anonymous data are available on Github (<https://github.com/ManyFacesTeam/pilot-ratings>).
  
@@ -684,6 +687,7 @@ Next, we examined the number of raters required for ratings to reach stable leve
 ```{r}
 #| label: fig-icc-cos
 #| fig-cap: Corridors of stability for ICC
+#| fig-cap-location: top
 #| fig-subcap:
 #|   - "Note. Dashed horizontal lines indicate ICC(2,k) of 0.75 and 0.90, respectively."
 #| fig-height: 15
@@ -707,6 +711,7 @@ To determine the number of raters required for stable ratings, we computed the p
 ```{r}
 #| label: fig-pos
 #| fig-cap: Points of stability for ratings
+#| fig-cap-location: top
 #| fig-subcap:
 #|   - "Note. Dashed horizontal lines indicate corridor of stability at +/- 0.5 points. Vertical lines indicate point of stability."
 #| fig-height: 15
@@ -795,6 +800,7 @@ unstd_MSD <- unstd_neutral |>
 ```{r}
 #| label: fig-neu-hist
 #| fig-cap: Histograms and descriptive statistics for trait ratings of standardized and unstandardized neutral faces
+#| fig-cap-location: top
 #| fig-subcap:
 #|   - "Note. Values in top right of each panel represent M (SD)."
 #| fig-width: 8
@@ -875,8 +881,9 @@ emo_cat <- data_exp |>
 ```{r}
 #| label: fig-emo-freq
 #| fig-cap: Emotion categorization frequencies
-#| fig-subcap:
-#|   - "Note. Downward arrows indicate correct categorizations (categorizations matching intended model expression)."
+#| fig-cap-location: top
+#|# fig-subcap:
+#|#   - "Note. Downward arrows indicate correct categorizations (categorizations matching intended model expression)."
 #| fig-width: 8
 #| fig-height: 5.5
 
@@ -952,6 +959,7 @@ emo_MSD <- emo_int |>
 ```{r}
 #| label: fig-intensity-hist
 #| fig-cap: Histograms of emotion intensity ratings
+#| fig-cap-location: top
 #| fig-subcap:
 #|   - "Note. Values in top right of each panel represent M (SD)."
 #| fig-width: 8
@@ -1029,6 +1037,7 @@ The distribution of raters’ perceptions of models’ ages is shown in @fig-age
 ```{r}
 #| label: fig-age-hist
 #| fig-cap: Histogram of perceived age
+#| fig-cap-location: top
 #| fig-width: 8
 #| fig-height: 4
 
@@ -1058,9 +1067,9 @@ The data associated with the images are also valuable. First, we collected groun
   
 ### Validation/norming ratings
 
-The patterns of ratings we obtained largely converge with published research. The higher intensity ratings of happiness expressions, compared to the other expressions, is similar to previous findings. For example, faces expressing happiness in the Radboud Faces Database were rated higher in intensity than most expressions (except fear) and higher in clarity than all other expressions [@langner_presentation_2010], and happy faces in the Karolinska Directed Emotional Faces were similarly rated higher in intensity than most expressions [but not differing significantly from disgust or surprise; @goeleven_karolinska_2008] Additionally, we found emotion recognition to be highest for happy expressions. These results align with other emotion recognition research using posed facial expressions of emotion. For example, emotion recognition was highest for faces expressing happiness in the Radboud Faces Database [@langner_presentation_2010], FACES [@ebner_facesdatabase_2010], the Karolinska Directed Emotional Faces [@calvo_facial_2008]; @goeleven_karolinska_2008], NimStim [@tottenham_nimstim_2009], and a sample of faces selected from various face image databases [@palermo_photographs_2004]. Similarly, raw recognition scores of the Amsterdam Dynamic Facial Expression Set (videos, rather than images) were highest for joy [@van_der_schalk_moving_2011]. 
+The patterns of ratings we obtained largely converge with published research. The higher intensity ratings of happiness expressions, compared to the other expressions, is similar to previous findings. For example, faces expressing happiness in the Radboud Faces Database were rated higher in intensity than most expressions (except fear) and higher in clarity than all other expressions [@langner_presentation_2010], and happy faces in the Karolinska Directed Emotional Faces were similarly rated higher in intensity than most expressions [but not differing significantly from disgust or surprise, @goeleven_karolinska_2008] Additionally, we found emotion recognition to be highest for happy expressions. These results align with other emotion recognition research using posed facial expressions of emotion. For example, emotion recognition was highest for faces expressing happiness in the Radboud Faces Database [@langner_presentation_2010], FACES [@ebner_facesdatabase_2010], the Karolinska Directed Emotional Faces [@calvo_facial_2008]; @goeleven_karolinska_2008], NimStim [@tottenham_nimstim_2009], and a sample of faces selected from various face image databases [@palermo_photographs_2004]. Similarly, raw recognition scores of the Amsterdam Dynamic Facial Expression Set (videos, rather than images) were highest for joy [@van_der_schalk_moving_2011]. 
   
-We also found recognition accuracy to be lowest for fearful expressions, which were most often misperceived as expressing surprise. Research using the Karolinska Directed Emotional Faces [@calvo_facial_2008]; @goeleven_karolinska_2008] and NimStim faces [@tottenham_nimstim_2009] showed a similar pattern, albeit to a less extreme extent (i.e., fearful faces were often misperceived as surprised – and vice versa – but nonetheless most often correctly categorized). This finding is also consistent with research showing substantial overlap in the expressions of fear and surprise [i.e., in their Action Units; @jack_four_2016]. Altogether, however, recognition accuracy of expressions other than happiness was lower in our sample of face images, compared to face images in other databases, which is likely attributable to other databases’ more specific and directed emotion expression elicitation procedures [e.g., conforming to prototypical Action Unit patterns; @ebner_facesdatabase_2010; @langner_presentation_2010], compared to our protocol, and/or others’ use of actors as models [e.g., @lundqvist_karolinska_1998; @tottenham_nimstim_2009]. Whether our noisier emotion expressions may be perceived as more natural or authentic than more clearly-posed or exaggerated expressions, however, remains an open question.
+We also found recognition accuracy to be lowest for fearful expressions, which were most often misperceived as expressing surprise. Research using the Karolinska Directed Emotional Faces [@calvo_facial_2008]; @goeleven_karolinska_2008] and NimStim faces [@tottenham_nimstim_2009] showed a similar pattern, albeit to a less extreme extent (i.e., fearful faces were often misperceived as surprised – and vice versa – but nonetheless most often correctly categorized). This finding is also consistent with research showing substantial overlap in the expressions of fear and surprise [i.e., in their Action Units, @jack_four_2016]. Altogether, however, recognition accuracy of expressions other than happiness was lower in our sample of face images, compared to face images in other databases, which is likely attributable to other databases’ more specific and directed emotion expression elicitation procedures [e.g., conforming to prototypical Action Unit patterns, @ebner_facesdatabase_2010; @langner_presentation_2010], compared to our protocol, and/or others’ use of actors as models [e.g., @lundqvist_karolinska_1998; @tottenham_nimstim_2009]. Whether our noisier emotion expressions may be perceived as more natural or authentic than more clearly-posed or exaggerated expressions, however, remains an open question.
   
 The distributions of the trait ratings we obtained are similar to those observed for other face databases. For example, ratings of neutral face images in the Chicago Face Database [@ma_chicago_2015] showed relatively normal distributions for trustworthiness, right-skew for attractiveness, and left-skew for gender-typicality, as we observed for our standardized neutral faces. However, although we observed fairly normally-distributed dominance ratings, these were somewhat right-skewed for the Chicago Face Database. The high correspondence between self-reported and perceived ages is also consistent with existing findings on age perception from face images [e.g., @ebner_facesdatabase_2010; see also @voegeli_differences_2021]. Finally, the number of raters needed to reach stable averages (between 29 and 50, depending on the rating) are overall comparable to those demonstrated in extant work [@hehman_assessing_2025], albeit somewhat higher.
   
@@ -1103,11 +1112,12 @@ read_csv("author_CRediT.csv") |>
 ```
 
 
-# Supplementary Material
+## Supplementary Material
 
 ```{r warning=FALSE}
 #| label: fig-model-age
 #| fig-cap: Histogram of model age, height, and weight in Phase 1
+#| fig-cap-location: top
 #| fig-width: 8
 #| fig-height: 10
 
@@ -1152,6 +1162,7 @@ p_weight <- data_models |>
 ```{r}
 #| label: fig-rt-distribution
 #| fig-cap: Median reaction time distribution in Phase 2
+#| fig-cap-location: top
 #| fig-subcap:
 #|   - "Note. Red dashed line indicates exclusion cutoff."
 
@@ -1177,6 +1188,7 @@ med_rt |>
 ```{r}
 #| label: fig-age
 #| fig-cap: Histogram of rater age in Phase 2
+#| fig-cap-location: top
 
 data_quest |> 
   ggplot(aes(x = age)) +
