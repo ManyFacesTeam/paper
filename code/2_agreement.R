@@ -3,6 +3,8 @@
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 # Code for Results: Agreement Indicators and Results: Points of stability
 
+workers <- parallelly::availableCores() - 1
+
 # pull out relevant data
 data_trait_std <- data_exp |>
   filter(exp == "attractive" | exp == "dominant"  | exp == "trustworthy"  | exp == "gender-typical"  | exp == "memorable") |>
