@@ -224,6 +224,7 @@ authors:
     email: sonja.windhager@univie.ac.at
 bibliography: references.bib
 csl: apa.csl
+css: formatting.css
 ---
 
 
@@ -447,6 +448,7 @@ model_n <- nrow(data_models)
 ```{r}
 #| label: tbl-images-per-type
 #| tbl-cap: The number of images available for each image type.
+#| tbl-cap-location: top
 
 ## TO UPDATE W/ ALL COUNTS (INCLUDING DIFFERENT ANGLES) & MORE READABLE LABELS ***
 
@@ -502,6 +504,7 @@ For height, we ensured all data were presented in centimeters, and for weight, w
 ```{r}
 #| label: tbl-model-demog
 #| tbl-cap: Summary of model age, height, and weight self-report, separated by gender
+#| tbl-cap-location: top
 
 data_models |>
   mutate(gender = gender_rec) |>
@@ -834,7 +837,7 @@ plot_unstd <- unstd_prop |>
   geom_text(data = unstd_MSD,
             mapping = aes(x = 6, y = .3, label = label)) +
   scale_x_continuous(breaks = 1:7) +
-  labs(title = "A Unstandardized neutral trait ratings",
+  labs(title = "B Unstandardized neutral trait ratings",
        x = "Rating",
        y = "Proportion") +
   theme_minimal() +
@@ -1206,6 +1209,7 @@ data_quest |>
 ```{r}
 #| label: tbl-exclusions
 #| tbl-cap: The number of raters excluded from analysis in Phase 2
+#| tbl-cap-location: top
 
 exclusions |> 
   summarise(
@@ -1224,11 +1228,13 @@ exclusions |>
   flextable::width(j = 1, 2)
 
 ```
-*Note.* Multiple raters met more than one exclusion criterion; therefore, the counts for individual criteria do not sum to the total number of raters excluded.
+*Note.* Multiple raters met more than one exclusion criterion; therefore, the counts for individual criteria do not sum to the total number of raters excluded.  
+  
 
 ```{r}
 #| label: tbl-raters-per-task
 #| tbl-cap: Number of raters per task in Phase 2
+#| tbl-cap-location: top
 
 # make task names more readable
 data_exp_rename <- data_exp |>
@@ -1268,11 +1274,13 @@ data_exp_rename |>
                     raters = "N") |>
   flextable::width(j = 1, 2)
 ```
-*Note*. The emotion rating task was broken into 6 counterbalanced versions.
+*Note*. The emotion categorization task was broken into 6 counterbalanced versions.  
+  
 
 ```{r}
 #| label: tbl-raters-country
 #| tbl-cap: Rater country of residence in Phase 2
+#| tbl-cap-location: top
 
 # convert country codes to names
 data_quest_rename <- data_quest |>
@@ -1326,10 +1334,13 @@ data_quest_rename |>
   set_header_labels(res = "Country of residence", n = "N") |>
   flextable::width(j = 1, 2)
 ```
+*Note*. Where rows list more than one country, *each* country in that row has the specified number of participants.  
+  
 
 ```{r}
 #| label: tbl-icc
 #| tbl-cap: Intraclass correlation coefficients, Cronbach’s alpha, and McDonald’s omega for trait and emotion intensity ratings
+#| tbl-cap-location: top
 
 # join ICC, alpha, & omega values
 icc_a_o_table <- icc_table |>
@@ -1362,6 +1373,7 @@ icc_a_o_table |>
 ```{r}
 #| label: tbl-emo-desc
 #| tbl-cap: Emotion categorization proportions
+#| tbl-cap-location: top
 
 emo_cat |> 
   group_by(model_expression) |> 
