@@ -14,9 +14,9 @@ data_models <- read_csv("../data/manyfaces-pilot-models_cleaned.csv",
 
 emo_levels <- c(
   neu = "neutral",
-  ang = "anger",
-  dis = "disgust",
-  fea = "fear",
+  ang = "angry",
+  dis = "disgusted",
+  fea = "fearful",
   hap = "happy",
   sad = "sad",
   sur = "surprised"
