@@ -1,6 +1,5 @@
 #devtools::install_github("debruine/webmorphR@dev")
 library(webmorphR)
-library(tidyverse)
 
 # Model data
 ct <- cols(

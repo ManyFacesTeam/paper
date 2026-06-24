@@ -62,11 +62,13 @@ ttest_summary <- function(x, y) {
          p = p_val)
 }
 
-#######################################################
-#################### ---- ICC ---- ####################
-#######################################################
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+# ---- INTRACLASS CORRELATION COEFFICIENTS ----
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
-### --- OBSERVED
+## --- --- --- --- --- ---
+## ---- Observed ICC -----
+## --- --- --- --- --- ---
 
 # Compute ICC(2,k) using psych package
 calc_icc <- function(data,
@@ -127,8 +129,13 @@ calc_icc <- function(data,
   }
 }
 
+## --- --- --- --- --- --- --- --- --- ---
+## ---- Corridor of stability (COS) -----
+## --- --- --- --- --- --- --- --- --- ---
 
-### --- RESAMPLING: Calculate "corridor of stability" (COS) ----
+#### ---- COS: Resampling ----
+# At what sample size (if at all) do ratings reach acceptable reliability of .75 to .90?
+
 calc_icc_cos <- function(data, exp,
                          n_raters_seq = seq(10, 100, 10),
                          n_iter = 500) {
@@ -172,13 +179,14 @@ calc_icc_cos <- function(data, exp,
   list_rbind(all_results)
 }
 
-# CACHE INTERMEDIARY OUTPUT
+#### ---- COS: Cache helper ----
+
 # so next time script runs it will only recompute
 # ICCs for experiments for which data has changed
 run_or_load_icc <- function(exp_name, data,
                             cache_dir = "cache/icc",
                             n_raters_seq = seq(10, 100, 10),
-                            n_iter = 50) {
+                            n_iter = 500) {
   if (!dir.exists(cache_dir)) dir.create(cache_dir, recursive = TRUE)
 
   data_hash <- digest::digest(data, algo = "xxhash64")
@@ -198,11 +206,98 @@ run_or_load_icc <- function(exp_name, data,
   }
 }
 
-##############################################################
-#### ---- Cronbach's alpha and McDonalds omega total ---- ####
-##############################################################
+#### ---- COS: Full pipeline ----
 
-### --- OBSERVED
+run_corridor_pipeline <- function(data,
+                                  seed = 123,
+                                  workers = parallelly::availableCores() - 1,
+                                  n_raters_seq = seq(10, 100, 10),
+                                  n_iter = 100) {
+
+  set.seed(seed)
+  future::plan(multisession, workers = workers)
+
+  experiments <- unique(data$exp)
+
+  corridor_icc_list <- furrr::future_map(
+    experiments,
+    function(exp_name) {
+      data_subset <- data |> filter(exp == exp_name) |> droplevels()
+      run_or_load_icc(
+        exp_name = exp_name,
+        data = data_subset,
+        n_raters_seq = n_raters_seq,
+        n_iter = n_iter
+      )
+    },
+    .options = furrr::furrr_options(seed = TRUE)
+  )
+
+  future::plan(sequential)
+
+  icc_corridor <- list_rbind(corridor_icc_list)
+
+  icc2k_corridor_summary <- icc_corridor |>
+    group_by(experiment, n_raters_sampled) |>
+    summarise(
+      ICC2_k_median = median(`ICC(2,k)`, na.rm = TRUE),
+      ICC2_k_low    = quantile(`ICC(2,k)`, 0.025, na.rm = TRUE),
+      ICC2_k_high   = quantile(`ICC(2,k)`, 0.975, na.rm = TRUE),
+      .groups = "drop"
+    )
+
+  thresholds_075 <- icc2k_corridor_summary |>
+    group_by(experiment) |>
+    summarise(
+      N_for_075_median = ifelse(
+        length(n_raters_sampled[ICC2_k_median >= 0.75]) > 0,
+        min(n_raters_sampled[ICC2_k_median >= 0.75]), NA),
+      .groups = "drop")
+
+  thresholds_090 <- icc2k_corridor_summary |>
+    group_by(experiment) |>
+    summarise(
+      N_for_090_median = ifelse(
+        length(n_raters_sampled[ICC2_k_median >= 0.90]) > 0,
+        min(n_raters_sampled[ICC2_k_median >= 0.90]), NA),
+      .groups = "drop")
+
+  corridor_plot <- icc2k_corridor_summary |>
+    ggplot(aes(x = n_raters_sampled)) +
+    geom_ribbon(aes(ymin = ICC2_k_low, ymax = ICC2_k_high),
+                alpha = 0.15, fill = "grey60") +
+    geom_line(aes(y = ICC2_k_median), linewidth = 0.8, colour = "black") +
+    geom_hline(yintercept = 0.75, linetype = "dashed", colour = "grey40") +
+    geom_hline(yintercept = 0.9,  linetype = "dashed", colour = "black") +
+    geom_vline(data = thresholds_075 |> filter(!is.na(N_for_075_median)),
+               aes(xintercept = N_for_075_median), colour = "red", linetype = "dotted") +
+    geom_text(data = thresholds_075 |> filter(!is.na(N_for_075_median)),
+              aes(x = N_for_075_median, y = 0.60, label = paste0("N=", N_for_075_median)),
+              angle = 0, hjust = -0.2, vjust = 0, colour = "red", size = 3) +
+    facet_wrap(~ experiment) +
+    scale_y_continuous(limits = c(0, 1)) +
+    scale_x_continuous(breaks = n_raters_seq, labels = n_raters_seq) +
+    labs(x = "Number of raters sampled", y = "ICC(2,k)") +
+    theme_minimal(base_size = 12) +
+    theme(
+      strip.text    = element_text(size = 12, face = "bold"),
+      axis.text     = element_text(size = 11),
+      axis.title    = element_text(size = 12),
+      plot.subtitle = element_text(size = 11)
+    )
+
+  list(
+    icc_corridor = icc_corridor,
+    summary      = icc2k_corridor_summary,
+    n_075        = deframe(thresholds_075),
+    n_090        = deframe(thresholds_090),
+    plot         = corridor_plot
+  )
+}
+
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+# ---- Cronbach's alpha & McDonalds omega ----
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
 calc_alpha_omega <- function(data,
                              group,
@@ -259,9 +354,11 @@ calc_alpha_omega <- function(data,
 }
 
 
-#########################################################################################
-##### ---- Hehman et al. (2018): Assessing point at which averages are stable ---- #####
-#########################################################################################
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+# ---- POINT OF STABILITY (POS) ----
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+
+# Hehman et al. (2018): Assessing point at which averages are stable
 
 # NOTE: Original code written by Gabe Nespoli
 # https://github.com/gabenespoli/resampling
@@ -281,11 +378,18 @@ calc_alpha_omega <- function(data,
 # 7)	Record POS for each of the three COS thresholds, and plot.
 
 
-##################################
-##### ---- CI functions ---- #####
+## --- --- --- --- --- ---
+## ---- CI functions -----
+## --- --- --- --- --- ---
 
 get_percentile <- function(x, interval) {
   boundary <- floor(length(x) * (1 - interval) / 2)
+
+  if (boundary < 1) {
+    warning("Too few values to compute percentile CI reliably; boundary clamped to 1. Consider increasing iterations.")
+    boundary <- 1L
+  }
+
   x <- sort(x)
   ll <- x[boundary]
   ul <- x[length(x) - boundary]
@@ -314,10 +418,10 @@ get_ci <- function(x, interval = 0.95, method = "percentile") {
   return(ci)
 }
 
-#############################################
-##### -------- The meaty stuff -------- #####
+## --- --- --- --- --- --- --- ---
+## ---- New custom functions -----
+## --- --- --- --- --- --- --- ---
 
-# New custom function
 calc_stability_stats <- function(data = data,
                                  col_map = list(trait = "trait", # define what required columns are called in your data
                                                 stim_id = "stim_id",
@@ -327,7 +431,9 @@ calc_stability_stats <- function(data = data,
                                  ci_interval = 0.95, # CI to use to define COS and hence determine POS
                                  ci_method = "percentile", # other option: normal = 95% CIs based on normal distribution (rather than actual percentiles)
                                  cos_threshold = 0.5, # how much variability in mean is accepted as "stable" (default: 0.5 points on rating scale)
+                                 seed = 123,
                                  save_means = FALSE) {
+  set.seed(seed)
   trait <- col_map$trait
   stim_id <- col_map$stim_id
   rating <- col_map$rating
@@ -383,7 +489,7 @@ calc_stability_stats <- function(data = data,
 
 }
 
-# RESAMPLING
+#### ---- POS: resampling ----
 resample_group <- function(ratings, N, iterations) {
   result <- matrix(NA_real_, nrow = N, ncol = iterations)
   for (n in seq_len(N)) {
@@ -400,15 +506,15 @@ resample_group <- function(ratings, N, iterations) {
 }
 
 
-# POINT OF STABILITY
+#### ---- POS: full function  ----
 # Based on CIs for each of respective sample sizes
 # Threshold to be adjusted to whatever is desired (e.g., values used by Hehman et al., 2018)
-# Note: Hehman et al. compare min CI to set threshold, but I think it would be more conservative to use max CI?
+# Note: Hehman et al. compare min CI to set threshold, but I think it is more conservative to use max CI: this ensures whole CI falls within corridor.
 calc_pos <- function(cis, threshold, inarow = 1, trait = "trait") {
 
   threshold <- abs(threshold)
 
-  cis  |>
+  cis |>
     group_by(across(all_of(trait))) |>
     mutate(max_ci = pmax(abs(ll), abs(ul)))  |>
     summarise(
@@ -417,13 +523,66 @@ calc_pos <- function(cis, threshold, inarow = 1, trait = "trait") {
         if (length(stable) < inarow) {
           NA_integer_
         } else {
-          runs <- map_lgl(
-            1:(length(stable) - inarow + 1),
-            ~ all(stable[.x:(.x + inarow - 1)])
-          )
-          match(TRUE, runs) %||% NA_integer_
+          runs <- map_lgl(1:(length(stable) - inarow + 1),
+                          ~ all(stable[.x:(.x + inarow - 1)]))
+          first_stable_idx <- match(TRUE, runs)
+          if (is.na(first_stable_idx)) {
+            NA_integer_
+          } else {
+            sample_size[first_stable_idx]
+          }
         }
       },
       .groups = "drop"
     )
+}
+
+#### ---- POS: Plot  ----
+plot_pos <- function(summary_ci,
+                     pos,
+                     fill_values,
+                     exp_levels = NULL,
+                     cos_threshold = 0.5,
+                     label_x_offset = 30,
+                     label_y = 1.6) {
+
+  pos <- pos |>
+    mutate(label = paste0("Point of stability\n(N = ", pos, ")"))
+
+  if (!is.null(exp_levels)) {
+    summary_ci <- summary_ci |>
+      mutate(exp = factor(exp, exp_levels))
+  }
+
+  summary_ci |>
+    ggplot(aes(x = sample_size)) +
+    geom_ribbon(aes(ymin = ll, ymax = ul, fill = exp),
+                alpha = 0.5) +
+    geom_vline(data = pos,
+               aes(xintercept = pos),
+               colour = "black",
+               linetype = "solid",
+               linewidth = .75) +
+    geom_hline(yintercept = c(-cos_threshold, cos_threshold),
+               linetype = "dashed",
+               colour = "grey30",
+               linewidth = 0.5) +
+    facet_wrap(~ exp) +
+    xlab("Sample size (N)") +
+    ylab("Centered mean ratings") +
+    scale_fill_manual(values = fill_values) +
+    theme_minimal() +
+    theme(panel.grid.major = element_line(colour = "#e8e8e8"),
+          panel.grid.minor = element_line(colour = "#e8e8e8"),
+          strip.text = element_text(size = 12, face = "bold"),
+          axis.text = element_text(size = 10),
+          axis.title = element_text(size = 12, face = "bold"),
+          legend.position = "none") +
+    geom_label(data = pos,
+               aes(x = pos + label_x_offset, y = label_y, label = label),
+               fill = NA,
+               linewidth = 0,
+               colour = "black",
+               size = 3.5,
+               inherit.aes = FALSE)
 }

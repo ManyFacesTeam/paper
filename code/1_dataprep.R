@@ -57,7 +57,7 @@ trial_data <- purrr::map_df(proj, \(comp) {
 
 # --- READ AND RESHAPE RAW DATA
 
-exp_raw <- read_csv("data/manyfaces-pilot-exp.csv",
+exp_raw <- read_csv("data/manyfaces_ratings_exp.csv",
                     show_col_types = FALSE)
 
 ed <- exp_data |>
@@ -71,7 +71,7 @@ exp_long_raw <- exp_raw |>
   left_join(ed, by = "exp_id")
 
 
-quest_raw <- read_csv("data/manyfaces-pilot-quest.csv",
+quest_raw <- read_csv("data/manyfaces_ratings_quest.csv",
                       show_col_types = FALSE) |>
   dplyr::select(session_id, q_name, dv, endtime) |>
   unique() |>
@@ -79,7 +79,7 @@ quest_raw <- read_csv("data/manyfaces-pilot-quest.csv",
   mutate(age = as.integer(age))
 
 
-model_raw <- read_csv("data/manyfaces-pilot-models.csv",
+model_raw <- read_csv("ReShare_data/manyfaces_model_data.csv",
                       show_col_types = FALSE)
 
 # --- PRELIMINARY DATA CLEANING: Model data
@@ -128,7 +128,11 @@ data_quest_pre_exclusions <- quest_raw |>
   # recode ethnicity
   mutate(ethnicity = tolower(ethnicity)) |>
   left_join(quest_eth_recode, by = "ethnicity") |>
-  relocate(ethnicity_rec, .after = ethnicity)
+  relocate(ethnicity_rec, .after = ethnicity) |>
+  # remove duplicate entries
+  group_by(session_id) |>
+  filter(endtime == max(endtime)) |>
+  dplyr::distinct()
 
 # --- PRELIMINARY DATA CLEANING: Experimental data
 
@@ -276,9 +280,11 @@ data_exp <- exp_long |>
   )
 
 data_quest <- data_quest_pre_exclusions |>
-  filter(session_id %in% data_exp$session_id)
+  filter(session_id %in% data_exp$session_id) |>
+  ungroup()
 
 final_raters <- unique(data_exp$session_id) |> length()
 
-# write_csv(data_exp, "data/manyfaces-pilot-exp_cleaned.csv")
-# write_csv(data_quest, "data/manyfaces-pilot-quest_cleaned.csv")
+# write_csv(data_exp, "data/manyfaces_ratings_exp_cleaned.csv")
+# write_csv(data_quest, "data/manyfaces_ratings_quest_cleaned.csv")
+# write_csv(data_models, "ReShare_data/manyfaces_model_data_cleaned.csv")

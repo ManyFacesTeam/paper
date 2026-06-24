@@ -6,5 +6,7 @@
 .DS_Store
 .quarto
 /images/
+ReShare_data/
 
 **/*.quarto_ipynb
+.positai

@@ -1,107 +1,122 @@
-##############################################################################
-# --- INTERRATER AGREEMENT AND POINT(S) OF STABILITY
-# --- Code for Results: Agreement Indicators and Results: Points of stability
-##############################################################################
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+# ---- INTERRATER AGREEMENT AND POINT(S) OF STABILITY ----
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+# Code for Results: Agreement Indicators and Results: Points of stability
 
-# Using parallel cores to speed things up; check how many cores are available
-workers <- max(1, parallel::detectCores(logical = FALSE) - 1)
+workers <- parallelly::availableCores() - 1
 
 # pull out relevant data
-data_trait <- data_exp |>
+data_trait_std <- data_exp |>
   filter(exp == "attractive" | exp == "dominant"  | exp == "trustworthy"  | exp == "gender-typical"  | exp == "memorable") |>
   mutate(exp = factor(exp, levels = c("attractive", "dominant", "trustworthy", "gender-typical", "memorable"))) |>
   mutate(dv = as.numeric(dv))
 
 data_trait_unstd <- data_exp |>
   filter(grepl("unstd", exp)) |>
-  mutate(dv = as.numeric(dv))
+  mutate(dv = as.numeric(dv)) |>
+  droplevels()
 
 data_emo_int <- data_exp |>
   filter(exp == "anger" | exp == "happiness"  | exp == "disgust"  | exp == "surprise"  | exp == "sadness" | exp == "fear") |>
-  mutate(dv = as.numeric(dv))
+  mutate(dv = as.numeric(dv)) |>
+  droplevels()
 
 data_emo_cat <- data_exp |>
-  filter(grepl("^em", exp))
+  filter(grepl("^em", exp)) |>
+  droplevels()
 
-# ------------------------------------------------------------------
-# --- AGREEMENT INDICATORS FOR THE RATINGS
-# ------------------------------------------------------------------
+## --- --- --- --- --- --- --- --- --- --- --- ---
+## ---- AGREEMENT INDICATORS FOR THE RATINGS -----
+## --- --- --- --- --- --- --- --- --- --- --- ---
 
-# --- STANDARDISED RATINGS: Corridors of stability
-# At what sample size (if at all) do ratings reach acceptable reliability of .75 to .90?
+### ---- ICC ----
+icc_table_std <- data_trait_std |>
+  group_by(exp) |>
+  group_map(calc_icc) |>
+  bind_rows() |>
+  mutate(across(where(is.numeric), \(x) round(x, 2))) |>
+  rename(Rating = experiment,
+         N = n_raters,
+         ICC = 3,
+         lower = 4,
+         upper = 5)
 
-# Set seed for reproducibility
-set.seed(123)
+icc_table_unstd <- data_trait_unstd |>
+  group_by(exp) |>
+  group_map(calc_icc, check_dropped_raters = FALSE) |>
+  bind_rows() |>
+  mutate(across(where(is.numeric), \(x) round(x, 2)))  |>
+  rename(Rating = experiment,
+         N = n_raters,
+         ICC = 3,
+         lower = 4,
+         upper = 5)
 
-# Set a stable parallel plan
-future::plan(multisession, workers = workers)
+icc_table_emo <- data_emo_int |>
+  group_by(exp) |>
+  group_map(calc_icc) |>
+  bind_rows() |>
+  mutate(across(where(is.numeric), \(x) round(x, 2)))  |>
+  rename(Rating = experiment,
+         N = n_raters,
+         ICC = 3,
+         lower = 4,
+         upper = 5)
 
-# Get unique experiments
-experiments <- unique(data_trait$exp)
+icc_table <- icc_table_std |>
+  bind_rows(icc_table_unstd) |>
+  bind_rows(icc_table_emo)
 
-# Run the function in parallel across experiments
-corridor_icc_list <- furrr::future_map(
-  experiments,
-  function(exp_name) {
-    data_subset <- data_trait |> filter(exp == exp_name)
-    run_or_load_icc(
-      exp_name = exp_name,
-      data = data_subset,
-      n_raters_seq = seq(10, 100, 10),
-      n_iter = 50
-    )
-  },
-  .options = furrr::furrr_options(seed = TRUE)
-)
+# Corridor of stability
+results_trait_std   <- run_corridor_pipeline(data_trait_std)
+results_trait_unstd <- run_corridor_pipeline(data_trait_unstd)
+results_emo_int     <- run_corridor_pipeline(data_emo_int)
 
-# Combine results
-icc_corridor <- list_rbind(corridor_icc_list)
+### ---- Cronbach's alpha and McDonald's omega ----
 
-# Reset plan to sequential
-future::plan(sequential)
+alpha_omega_std <- data_trait_std |>
+  group_by(exp) |>
+  group_map(purrr::partial(calc_alpha_omega)) |>
+  bind_rows() |>
+  rename(Rating = experiment,
+         N = n_raters,
+         alpha = alpha,
+         omega = omega_t)
 
-# Produce summary
-icc2k_corridor_summary <- icc_corridor |>
-  group_by(experiment, n_raters_sampled) |>
-  summarise(
-    ICC2_k_median = median(`ICC(2,k)`, na.rm = TRUE),
-    ICC2_k_low = quantile(`ICC(2,k)`, 0.025, na.rm = TRUE),
-    ICC2_k_high = quantile(`ICC(2,k)`, 0.975, na.rm = TRUE),
-    .groups = "drop"
-  )
+alpha_omega_unstd <- data_trait_unstd |>
+  group_by(exp) |>
+  group_map(calc_alpha_omega) |>
+  bind_rows() |>
+  rename(Rating = experiment,
+         N = n_raters,
+         alpha = alpha,
+         omega = omega_t)
 
-# Calculate median thresholds
-thresholds_median_075 <- icc2k_corridor_summary |>
-  group_by(experiment) |>
-  summarise(
-    N_for_075_median = ifelse(length(n_raters_sampled[ICC2_k_median >= 0.75]) > 0,
-                              min(n_raters_sampled[ICC2_k_median >= 0.75]),
-                              NA),
-    .groups = "drop")
+alpha_omega_emo <- data_emo_int |>
+  group_by(exp) |>
+  group_map(calc_alpha_omega) |>
+  bind_rows() |>
+  rename(Rating = experiment,
+         N = n_raters,
+         alpha = alpha,
+         omega = omega_t)
 
-thresholds_median_090 <- icc2k_corridor_summary |>
-  group_by(experiment) |>
-  summarise(
-    N_for_090_median = ifelse(length(n_raters_sampled[ICC2_k_median >= 0.90]) > 0,
-                              min(n_raters_sampled[ICC2_k_median >= 0.90]),
-                              NA),
-    .groups = "drop")
-
-n_075 <- thresholds_median_075 |> deframe()
-n_090 <- thresholds_median_090 |> deframe()
+alpha_omega_table <- alpha_omega_std |>
+  bind_rows(alpha_omega_unstd) |>
+  bind_rows(alpha_omega_emo)
 
 
-# ------------------------------------------------------------------
-# --- POINTS OF STABILITY
-# ------------------------------------------------------------------
+## --- --- --- --- --- --- --- --- --- --- --- ---
+## --- POINTS OF STABILITY ----
+## --- --- --- --- --- --- --- --- --- --- --- ---
 
-# --- STANDARDISED RATINGS
+### ---- Standardized ratings ----
 
 # To save time, output cached
 if (!file.exists("cache/pos_traits_std.rds")) {
   set.seed(123)
   future::plan(multisession, workers = workers)
-  stability_stats_traits <- calc_stability_stats(data = data_trait,
+  stability_stats_traits <- calc_stability_stats(data = data_trait_std,
                                                  N = 100,
                                                  iterations = 300,
                                                  ci_interval = 0.95, ci_method = "percentile",
@@ -124,7 +139,7 @@ summary_ci_traits <- stability_stats_traits$cis |>
             .groups = "drop")
 
 
-# --- UNSTANDARDISED RATINGS
+### ----  Unstandardized ratings ----
 if (!file.exists("cache/pos_traits_unstd.rds")) {
   set.seed(123)
   future::plan(multisession, workers = workers)
@@ -151,7 +166,7 @@ summary_ci_traits_unstd <- stability_stats_traits_unstd$cis |>
             .groups = "drop")
 
 
-# --- EMOTION INTENSITY RATINGS
+### ----  Emotion intensity ratings ----
 if (!file.exists("cache/pos_emo.rds")) {
   set.seed(123)
   future::plan(multisession, workers = workers)
