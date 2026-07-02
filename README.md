@@ -4,7 +4,7 @@ This project contains the files necessary to render the manuscript *Capturing Ma
 
 ## the manuscript
 * index.qmd renders the manuscript file
-* the rendered mnuscript can be found in docs/index.html
+* the rendered manuscript can be found in docs/index.html
 
 ## code folder
 * 0_raw_data: compiling of raw data (archive only)
