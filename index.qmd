@@ -269,58 +269,6 @@ rainbow <- c("firebrick", "darkorange", "goldenrod",
              "darkgreen", "dodgerblue3", "darkorchid4")
 ```
 
-```{r eval=FALSE}
-# OLD CHUNK -- KEEP FOR NOW WHILE I'M UPDATING, DELETE ONCE FINISHED
-# read in main data used
-
-# Model data
-ct <- cols(
-  age = col_integer(),
-  height = col_integer(),
-  weight = col_integer(),
-  ethnicity_rec = col_factor(levels = c("White", "Black", "Asian", "Indigenous", "MENA", "Latine", "Mixed", "Ambiguous label"), include_na = TRUE)
-)
-data_models <- read_csv("data/manyfaces_ratings_models_cleaned.csv",
-                        col_types = ct)
-
-# Rating data (post exclusions)
-exp_levels <- c("attractive", 
-                "dominant", 
-                "trustworthy", 
-                "attractive (unstd)", 
-                "dominant (unstd)", 
-                "trustworthy (unstd)",
-                "memorable",
-                "gender-typical",
-                "age",
-                "anger",
-                "disgust", 
-                "fear", 
-                "happiness", 
-                "sadness", 
-                "surprise",
-                "emotion 1", 
-                "emotion 2", 
-                "emotion 3", 
-                "emotion 4", 
-                "emotion 5", 
-                "emotion 6"
-              )
-ct <- cols(
-  exp = col_factor(levels = exp_levels)
-)
-data_exp <- read_csv("data/manyfaces-pilot-exp_cleaned.csv",
-                     col_types = ct)
-
-# Questionnaire data (post exclusions)
-data_qu <- read_csv("data/manyfaces-pilot-quest_cleaned.csv",
-                    show_col_types = FALSE)
-
-# Exclusions
-data_excl <- read_csv("data/exclusions.csv",
-                    show_col_types = FALSE)
-```
-
 ## Abstract
 
 Images of faces are crucial stimuli in various fields of research. A variety of valuable face image databases exist for research purposes, but many suffer from common limitations. A primary limitation is a lack of sufficient documentation of the methods of image collection to enable, for example, comparisons across research using images from different databases, or the collection of comparable images. Extant databases are moreover largely fixed (i.e., most face image databases do not grow once published) and are often limited in the diversity of their images (e.g., images per model, model demographic background) and/or associated data (e.g., model self-report data). Database collection is also generally possible only for well-resourced researchers, due to equipment cost and setup complexity. Here, using a big-team science approach, we sought to address these limitations by developing an open and transparent face image collection protocol, with a focus on accessibility (e.g., relatively simple setup, more affordable equipment) and reproducibility. Following this protocol at 20 sites spanning five world regions (Europe, Latin America, North America, Middle East, Southeast Asia), we moreover compile a diverse face image database with corresponding model self-report data (age, gender, ethnicity, height, weight, makeup, procedures/experiences affecting face shape) and norming data (trait ratings, emotion expression perceptions) collected from a sample of online perceivers. We make the database freely available for research use and encourage future additions to this database by following the available protocol.
