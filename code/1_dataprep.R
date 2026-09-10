@@ -70,7 +70,6 @@ exp_long_raw <- exp_raw |>
   mutate(trial_name = sub("^(manyfaces|attention_checks)/", "", trial_name)) |>
   left_join(ed, by = "exp_id")
 
-
 quest_raw <- read_csv("data/manyfaces_ratings_quest.csv",
                       show_col_types = FALSE) |>
   dplyr::select(session_id, q_name, dv, endtime) |>
@@ -82,16 +81,17 @@ quest_raw <- read_csv("data/manyfaces_ratings_quest.csv",
 model_raw <- read_csv("ReShare_data/manyfaces_model_data.csv",
                       show_col_types = FALSE)
 
+
 # --- PRELIMINARY DATA CLEANING: Model data
 
 ethnicity_recode <- read_csv("data/recode_eth_model.csv", na = "", show_col_types = FALSE)
 gender_recode <- read_csv("data/recode_gender_model.csv", na = "", show_col_types = FALSE)
 
 data_models <- model_raw |>
-  separate_wider_delim(ID,
-                       delim = "_",
-                       names = c("lab_id", "model_id"),
-                       too_many = "drop") |>
+# separate_wider_delim(ID,
+#                       delim = "_",
+#                       names = c("lab_id", "model_id"),
+#                       too_many = "drop") |>
   mutate(across(where(is.character), ~ na_if(.x, "NULL"))) |>
   # recode gender and ethnicity
   mutate(gender = tolower(gender),
@@ -278,6 +278,9 @@ data_exp <- exp_long |>
                                       "emotion 5",
                                       "emotion 6"))
   )
+data_exp <- data_exp |>
+  # remove rating data for models who didn't consent to database inclusion
+  filter(!grepl("MF0007|MF0013_0002|MF0013_0004|MF0013_0006|MF0013_0008|MF0013_0010|MF0013_0012|MF0014_0001|MF0015_0005|MF0015_0009|MF0021_0006|MF0025_0009", trial_name))
 
 data_quest <- data_quest_pre_exclusions |>
   filter(session_id %in% data_exp$session_id) |>
