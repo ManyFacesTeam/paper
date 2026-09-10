@@ -390,10 +390,10 @@ model_n <- nrow(data_models)
 ## *** to update following further withdrawals ***
 ```
 
-`r model_n` total models provided their images, following withdrawals and exclusions for poor image quality (as determined by the researchers collecting the images and the core team). @tbl-images-per-type details the number of models for each kind of photo. Example images are shown in @fig-img-examples. Images are freely available for research use and can be accessed via UK Data Service ReShare: [**link to be added**]. Note that researchers must agree to our terms of use to access the database, in line with ethical constraints (see [**link**]).
+211 total models provided their images, following withdrawals and exclusions for poor image quality (as determined by the researchers collecting the images and the core team). Of these, `r model_n` consented to have their images shared in a database. @tbl-images-per-type details the number of models for each kind of photo. Example images are shown in @fig-img-examples. Images are freely available for research use and can be accessed via UK Data Service ReShare: [**link to be added**]. Note that researchers must agree to our terms of use to access the database, in line with ethical constraints (see [**link**]).
 
 
-```{r}
+```{r eval=FALSE}
 #| label: tbl-images-per-type
 #| tbl-cap: The number of images available for each image type.
 #| tbl-cap-location: top
@@ -409,6 +409,7 @@ emo_levels <- c(neu = "neutral",
                 sad = "sad", 
                 sur = "surprised")
 
+# *** LISA: extract these data from elsewhere, as data_models only had front-facing image info (now removed from that file ***)
 image_type_n <- data_models |>
   select(model_id:unstd_neu) |>
   pivot_longer(std_ang:unstd_neu) |>
@@ -423,13 +424,13 @@ image_type_n |>
   flextable()
 ```
 
-```{r}
+```{r eval=FALSE}
 #| label: fig-img-examples
 #| fig-cap: Example images of each level of standardization, angle, and expression
 #| fig-cap-location: top
 #| fig-alt: "A 7x6 grid of pictures of a woman in a white t-shirt with a white headband, showing different angles and expressions. Top labels: neutral, angry, disgusted, fearful, happy, sad, surprised. Side labels: standardized front, standardized left 90 (side profile), standardized left 45 (three-quarter profile), standardized right 45, standardized right 90, unstandardized front."
 
-#*** UPDATE IMAGE LABELS TO BE GRAMMATICALLY CONSISTENT, ADD 'NATURAL' 
+#*** LISA: update image labels to be grammatically consistent
 
 knitr::include_graphics("fig/img-examples.png")
 ```
@@ -445,7 +446,7 @@ names(eth_n) <- c(as.character(eth_rec$ethnicity_rec[1:8]), "NA")
 ```
 
 For data cleaning, we first downloaded and reshaped the raw data from Experimentum. In the next step, we ensured that the models’ self-reported gender, race/ethnicity, and units of height and weight were consistently formatted across labs.
-For gender and race/ethnicity, words presented in languages other than English were recoded to be presented in English (e.g., “mulher” to “female”, “preta” to “Black”). Two members of the research team then classified self-described race/ethnicity into one of seven categories (checked by a third team member): “White” (n = `r eth_n$White`), “Black” (n = `r eth_n$Black`), “Asian” (n = `r eth_n$Asian`), “Indigenous” (n = `r eth_n$Indigenous`), “MENA” (Middle Eastern or North African; n = `r eth_n[["Middle Eastern or North African (MENA)"]]`), “Latine” (n = `r eth_n$Latine`), or “Mixed” (n = `r eth_n$Mixed`)), where possible. Descriptions that could not be clearly sorted into these categories were given “Ambiguous label” (n = `r eth_n[["Ambiguous label"]]`) and non-entries were recoded as NA (n = `r eth_n[["NA"]]`). Note that the models’ original self-reported phrasing of their gender and race/ethnicity is available in the model self-report data file included with the image database.
+For gender and race/ethnicity, words presented in languages other than English were recoded to be presented in English (e.g., “mulher” to “female”, “preta” to “Black”). Two members of the research team then classified self-described race/ethnicity into one of seven categories (checked by a third team member): “White” (n = `r eth_n$White`), “Black” (n = `r eth_n$Black`), “Asian” (n = `r eth_n$Asian`), “Indigenous” (n = `r eth_n$Indigenous`), “MENA” (Middle Eastern or North African; n = `r eth_n[["Middle Eastern or North African (MENA)"]]`), “Latine” (n = `r eth_n$Latine`), or “Mixed” (n = `r eth_n$Mixed`), where possible. Descriptions that could not be clearly sorted into these categories were given “Ambiguous label” (n = `r eth_n[["Ambiguous label"]]`) and non-entries were recoded as NA (n = `r eth_n[["NA"]]`). Note that the models’ original self-reported phrasing of their gender and race/ethnicity is available in the model self-report data file included with the image database.
   
 For height, we ensured all data were presented in centimeters, and for weight, we ensured that all data were presented in kilograms. Models could report height and weight in metric or imperial units, so we converted from imperial to metric where required. We also sanity-checked the reported units, assuming heights > 100 to be in centimeters and those < 100 to be in inches, and weights < 80 to be in kilograms. Any non-entries of height or weight for a model was recoded as NA.
 
@@ -526,23 +527,16 @@ knitr::include_graphics("fig/img-processing.png")
 
 #### Stimuli
 
-```{r}
-# count images for each emotion and unstandardised
-emo_n <- as.list(image_type_n$std)
-names(emo_n) <- image_type_n$emotion
-unstd <- image_type_n$unstd[[1]]
-```
-
-The number of stimuli was determined by the number of models recruited across the 20 research labs and how many models posed for each image type. The maximum number of targets per image type was 205^[The preregistration mis-stated the total number of models, rather than the maximum number of images, to be 205. The total number of models was 211], meaning each rater saw up to 205 stimuli. We obtained ratings of the front-facing standardized neutral (n = `r emo_n$neutral`), unstandardized neutral (n = `r unstd`), standardized angry (n = `r emo_n$angry`), standardized disgusted (n = `r emo_n$disgusted`), standardized fearful (n = `r emo_n$fear`), standardized happy (n = `r emo_n$happy`), standardized sad (n = `r emo_n$sad`), and standardized surprised (n = `r emo_n$surprised`) images.
+The number of stimuli was determined by the number of models recruited across the 20 research labs and how many models posed for each image type. The maximum number of targets per image type was 205^[The preregistration mis-stated the total number of models, rather than the maximum number of images, to be 205. The total number of models was 211], meaning each rater saw up to 205 stimuli. We obtained ratings of the front-facing standardized neutral (n = 205), unstandardized neutral (n = 177), standardized angry (n = 187), standardized disgusted (n = 184), standardized fearful (n = 175), standardized happy (n = 199), standardized sad (n = 183), and standardized surprised (n = 184) images. Note that these numbers of stimuli are higher than the number of stimuli available in the database.
 
 
-```{r}
+```{r eval=FALSE}
 #| label: fig-stim-examples
 #| fig-cap: An example of each type of stimulus, with the total number of stimuli of that type in parentheses.
 #| fig-cap-location: top
-#| fig-alt: "Example face images for the 8 types of stimuli: unstandardized (177), neutral (205), angry (187), disgusted (184), fearful (175), happy (199), sad (183), surprised (184)"
+#| fig-alt: "Example face images for the 8 types of stimuli: unstandardized neutral, standardized neutral, angry, disgusted, fearful, happy, sad, and surprised"
 
-# *** CHANGE LABELS IN IMAGE TO BE GRAMMATICALLY CONSISTENT ***
+# ***LISA: change labels in image to be grammatically consistent ***
 
 knitr::include_graphics("fig/stim-types.png")
 ```
@@ -593,6 +587,9 @@ We recruited a gender-balanced sample of fluent English-speaking raters through 
 We aimed to collect 100 raters per rating condition to achieve stable averages and allow for exclusions [@hehman_assessing_2025], totalling 2100 raters. Altogether, `r initial_raters` raters completed the study and received compensation in line with Prolific’s guidelines. See Results for exclusions and demographics of the final sample.
 
 ### Results
+
+We present here only the results for ratings of images of models who agreed to be included in the database, rather than all images raters saw.
+
 
 #### Data cleaning and exclusions
 
@@ -653,11 +650,11 @@ Next, we examined the number of raters required for ratings to reach stable leve
   plot_layout(heights = c(2, 1, 2))
 ```
 
-To further check inter-rater agreement, we used both Cronbach’s alpha (α) and McDonald’s omega total (ωt; see @tbl-icc in SM). For attractiveness, dominance, trustworthiness, gender-typicality, and emotion intensity ratings, both measures indicated excellent inter-rater agreement (.88 ≤ α ≤ .99; .90 ≤ ωt ≤ .99). For ratings of memorability, α was lower (0.66), suggesting reduced inter-rater agreement. ωt for memorability was substantially higher (0.87), suggesting better agreement under the assumption that raters varied in how consistently they judged memorability, a pattern consistent with the lower ICC observed for this trait.
+To further check inter-rater agreement, we used both Cronbach’s alpha (α) and McDonald’s omega total (ωt; see @tbl-icc in SM). For attractiveness, dominance, trustworthiness, gender-typicality, and emotion intensity ratings, both measures indicated excellent inter-rater agreement (.88 ≤ α ≤ .99; .90 ≤ ωt ≤ .99). For ratings of memorability, α was lower (0.67), suggesting reduced inter-rater agreement. ωt for memorability was substantially higher (0.87), suggesting better agreement under the assumption that raters varied in how consistently they judged memorability, a pattern consistent with the lower ICC observed for this trait.
   
 #### Points of stability
 
-To determine the number of raters required for stable ratings, we computed the point of stability [@hehman_assessing_2025], defined as the smallest sample size at which 95% of resampled means fall within a corridor of stability of ±0.5 points and do not again exceed it.^[Note that we declared stability when the *upper* bound crossed inside the threshold, whereas Hehman and colleagues declare stability when the lower/nearer bound crosses inside the threshold.] As shown in @fig-pos, the ratings of standardized images reached stability between 37 and 44 raters, the ratings of unstandardized images between 37 and 41 raters, and emotion intensity ratings of standardized emotional faces between 29 and 50 raters.
+To determine the number of raters required for stable ratings, we computed the point of stability [@hehman_assessing_2025], defined as the smallest sample size at which 95% of resampled means fall within a corridor of stability of ±0.5 points and do not again exceed it.^[Note that we declared stability when the *upper* bound crossed inside the threshold, whereas Hehman and colleagues declare stability when the lower/nearer bound crosses inside the threshold.] As shown in @fig-pos, the ratings of standardized images reached stability between 37 and 44 raters, the ratings of unstandardized images between 37 and 42 raters, and emotion intensity ratings of standardized emotional faces between 29 and 50 raters.
 
 ```{r}
 #| label: fig-pos
@@ -694,7 +691,7 @@ In this section, we report the descriptive statistics for ratings of the neutral
   
 ##### Standardized and unstandardized neutral trait ratings
 
-For standardized neutral faces, trustworthiness, dominance, and memorability ratings were approximately normally distributed and showed similar patterns of central tendency and variance. In contrast, attractiveness ratings were somewhat right-skewed, whereas gender-typicality ratings were left-skewed (see @fig-neu-hist).
+For standardized neutral faces, trustworthiness, dominance, and memorability ratings were approximately normally distributed and showed similar patterns of central tendency and variance. In contrast, attractiveness ratings were somewhat right-skewed, whereas gender-typicality ratings were left-skewed (see @fig-neu-hist). For unstandardized neutral faces, patterns for attractiveness and dominance were similar to those for standardized neutral faces, but trustworthiness ratings showed slight left skew.
 
 ```{r}
 std_neutral <- data_exp |>
@@ -802,7 +799,7 @@ plot_unstd <- unstd_prop |>
 
 ##### Emotion categorization and intensity ratings
 
-Next, we explored raters’ emotion categorizations and perceived emotion intensity expressed by our models. Raters’ categorizations generally aligned with the models’ expression of emotion, with the greatest alignment observed for expression of happiness, and the least for fear, with fearful faces most often perceived as expressing surprise (see @fig-emo-freq, @tbl-emo-desc in SM). 
+Next, we explored raters’ emotion categorizations and perceived emotion intensity expressed by our models. Raters’ categorizations generally aligned with the models’ expression of emotion, with the greatest alignment observed for expression of happiness, and the least for fear, with fearful faces most often perceived as expressing surprise rather than fear (see @fig-emo-freq, @tbl-emo-desc in SM). 
 
 ```{r}
 emo_cat <- data_exp |>
