@@ -3,7 +3,7 @@ html {
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: 2rem; /* doesn't seem to be working */
 }
 
 h2 {
