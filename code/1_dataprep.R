@@ -280,7 +280,7 @@ data_exp <- exp_long |>
   )
 data_exp <- data_exp |>
   # remove rating data for models who didn't consent to database inclusion
-  filter(!grepl("MF0007|MF0013_0002|MF0013_0004|MF0013_0006|MF0013_0008|MF0013_0010|MF0013_0012|MF0014_0001|MF0015_0005|MF0015_0009|MF0021_0006|MF0025_0009", trial_name))
+  filter(!grepl("MF0007|MF0013_0002|MF0013_0004|MF0013_0006|MF0013_0008|MF0013_0010|MF0013_0012|MF0014_0001|MF0015_0005|MF0015_0009|MF0021_0006|MF0025_0009|MF0017_0007", trial_name))
 
 data_quest <- data_quest_pre_exclusions |>
   filter(session_id %in% data_exp$session_id) |>
