@@ -627,7 +627,7 @@ We collected the following demographic data from our raters (N = `r n_demog_prov
   
 #### Agreement indicators for the ratings
 
-In the first step, we calculated intraclass correlation coefficients [ICC(2,k)] for each of the ratings. The average reliability across raters was excellent for ratings of standardized and unstandardized neutral faces’ attractiveness, dominance, and trustworthiness, standardized neutral faces’ gender-typicality, and standardized emotional faces’ emotion intensity (.84 ≤ ICC ≤ .98), but poorer for ratings of standardized neutral faces’ memorability (ICC = .60; see @tbl-icc in SM).
+In the first step, we calculated intraclass correlation coefficients [ICC(2,k)] for each of the ratings. The average reliability across raters was excellent for ratings of standardized and unstandardized neutral faces’ attractiveness, dominance, and trustworthiness, standardized neutral faces’ gender-typicality, and standardized emotional faces’ emotion intensity (.84 ≤ ICC ≤ .98), but poorer for ratings of standardized neutral faces’ memorability (ICC = .59; see @tbl-icc in SM).
   
 Next, we examined the number of raters required for ratings to reach stable levels of reliability defined as ICC(2,k) values of 0.75 (see @fig-icc-cos). Emotion intensity and attractiveness ratings stabilized with the fewest participants (reaching a median ICC(2,k) of 0.75 at 10 raters for happiness, disgust, and surprise; 20 for anger, fear, sadness, and attractiveness) and were also the only ratings to exceed a median ICC(2,k) of 0.90. Ratings for dominance, trustworthiness, and gender-typicality stabilized at larger samples (reached a median ICC(2,k) of 0.75 with 40-60 raters), whereas ratings for memorability did not reach these levels of reliability.
 
