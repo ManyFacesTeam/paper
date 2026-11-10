@@ -3,8 +3,10 @@
 # --- Reshaping and cleaning raw data, preregistered exclusions
 ####################################################################
 
+library(tidyverse)
+
 # ------------------------------------------------------------------
-# --- PROJECT STRUCTURE
+# --- PROJECT STRUCTURE ----
 # ------------------------------------------------------------------
 
 # Read in the full project structure from the project file to map experiment names to numbers.
@@ -52,7 +54,7 @@ trial_data <- purrr::map_df(proj, \(comp) {
 
 
 # ------------------------------------------------------------------
-# --- DATA PREP
+# --- DATA PREP ----
 # ------------------------------------------------------------------
 
 # --- READ AND RESHAPE RAW DATA
@@ -87,6 +89,10 @@ model_raw <- read_csv("ReShare_data/manyfaces_model_data.csv",
 ethnicity_recode <- read_csv("data/recode_eth_model.csv", na = "", show_col_types = FALSE)
 gender_recode <- read_csv("data/recode_gender_model.csv", na = "", show_col_types = FALSE)
 
+eth_levels <- c("White", "Black", "Asian", "Indigenous",
+                "Middle Eastern or North African (MENA)",
+                "Latine", "Mixed", "Ambiguous label")
+
 data_models <- model_raw |>
 # separate_wider_delim(ID,
 #                       delim = "_",
@@ -101,7 +107,7 @@ data_models <- model_raw |>
   relocate(gender_rec, .after = gender) |>
   relocate(ethnicity_rec, .after = ethnicity) |>
   mutate(ethnicity_rec = factor(ethnicity_rec,
-                                levels = c("White", "Black", "Asian", "Indigenous", "Middle Eastern or North African (MENA)", "Latine", "Mixed", "Ambiguous label"))) |>
+                                levels = eth_levels)) |>
   mutate(across(c(age, weight, height), as.numeric)) |>
   # recode height and weight
   # one person reported weight of 37 kg at 163 cm -- recode as NA? Would be a BMI of 13.9
@@ -134,7 +140,8 @@ data_quest_pre_exclusions <- quest_raw |>
   filter(endtime == max(endtime)) |>
   dplyr::distinct()
 
-# --- PRELIMINARY DATA CLEANING: Experimental data
+# --- PRELIMINARY DATA CLEANING: Experimental data ----
+
 
 initial_raters<- exp_long_raw |>
   count(session_id) |>
@@ -288,6 +295,6 @@ data_quest <- data_quest_pre_exclusions |>
 
 final_raters <- unique(data_exp$session_id) |> length()
 
-# write_csv(data_exp, "data/manyfaces_ratings_exp_cleaned.csv")
-# write_csv(data_quest, "data/manyfaces_ratings_quest_cleaned.csv")
-# write_csv(data_models, "ReShare_data/manyfaces_model_data_cleaned.csv")
+write_csv(data_exp, "data/manyfaces_ratings_exp_cleaned.csv")
+write_csv(data_quest, "data/manyfaces_ratings_quest_cleaned.csv")
+write_csv(data_models, "ReShare_data/manyfaces_model_data_cleaned.csv")

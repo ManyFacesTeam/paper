@@ -246,9 +246,12 @@ set_flextable_defaults(digits = 2,
 theme_set(theme_bw(base_size = 14))
 
 source("code/custom_functions.R")
+# process data
 source("code/1_dataprep.R")
+# agreement analysis ( loads from cached if possible )
 source("code/2_agreement.R")
 ```
+
 
 ```{r}
 # prep variables to be used later
@@ -268,6 +271,7 @@ exp_levels_emo_int <- c("anger", "disgust", "fear",
 rainbow <- c("firebrick", "darkorange", "goldenrod",
              "darkgreen", "dodgerblue3", "darkorchid4")
 ```
+
 
 ## Abstract
 
@@ -392,15 +396,13 @@ model_n <- nrow(data_models)
 A total of 211 models provided their images for use in Phase 2, following exclusions for poor image quality (as determined by the researchers collecting the images and the core team) and two model withdrawals. Of these, `r model_n` consented to have their images shared in a database. @tbl-images-per-type details the number of models for each kind of photo available in the database. Example images are shown in @fig-img-examples. Images are freely available for research use and can be accessed via UK Data Service ReShare: [**LINK**]<!--LISA TO ADD LINK-->. Note that researchers must agree to our terms of use to access the database, in line with ethical constraints (see <https://doi.org/10.5281/zenodo.22707036>).
 
 
-```{r eval=FALSE}
+```{r}
 #| label: tbl-images-per-type
 #| tbl-cap: The number of images available for each image type.
 #| tbl-cap-location: top
 
-## TO UPDATE W/ ALL COUNTS (INCLUDING DIFFERENT ANGLES) & MORE READABLE LABELS ***
-
-emo_levels <- c(neu = "neutral", 
-              #  nat = "natural",
+emo_types <-  c(neu = "neutral", 
+                nat = "natural",
                 ang = "angry", 
                 dis = "disgusted", 
                 fea = "fearful", 
@@ -408,28 +410,34 @@ emo_levels <- c(neu = "neutral",
                 sad = "sad", 
                 sur = "surprised")
 
-# *** LISA: extract these data from elsewhere, as data_models only had front-facing image info (now removed from that file ***)
-image_type_n <- data_models |>
-  select(model_id:unstd_neu) |>
-  pivot_longer(std_ang:unstd_neu) |>
-  filter(value == 1) |>
-  count(name) |>
-  separate(name, c("type", "emotion")) |>
-  pivot_wider(names_from = type, values_from = n) |>
-  mutate(emotion = factor(emotion, names(emo_levels), emo_levels)) |>
-  arrange(emotion)
+view_types <- c('0' = "front", 
+                'l45' = "left 45",
+                'r45' = "right 45", 
+                'l90' = "left 90",
+                'r90' = "right 90")
+
+## get table of Ns
+
+image_type_n <- read_csv("data/manyfaces_manifest_raw.csv",
+                         show_col_types = FALSE) |>
+  filter(!type %in% c("exp", "id")) |>
+  mutate(emo = factor(emo, names(emo_types), emo_types),
+         view = factor(view, names(view_types), view_types),
+         type = recode_values(type, from = c("std", "unstd"), to = c("standardized", "unstandardized"))) |>
+  count(type, emo, view) |>
+  pivot_wider(names_from = c(emo),
+              names_sep = " ",
+              values_from = n)
 
 image_type_n |>
   flextable()
 ```
 
-```{r eval=FALSE}
+```{r}
 #| label: fig-img-examples
 #| fig-cap: Example images of each level of standardization, angle, and expression
 #| fig-cap-location: top
 #| fig-alt: "A 7x6 grid of pictures of a woman in a white t-shirt with a white headband, showing different angles and expressions. Top labels: neutral, angry, disgusted, fearful, happy, sad, surprised. Side labels: standardized front, standardized left 90 (side profile), standardized left 45 (three-quarter profile), standardized right 45, standardized right 90, unstandardized front."
-
-#*** LISA: update image labels to be grammatically consistent
 
 knitr::include_graphics("fig/img-examples.png")
 ```
@@ -514,7 +522,7 @@ RAW images were processed using webmorphR [@debruine_reproducible_2022], which f
 * This aligned image was saved as a lossless PNG using imagemagick default settings (e.g., sRGB colour space).
 * A white balance correction was applied to the resulting images, calculated from the mean RGB values in the 25x25 pixel top-right corner patch (white background) ^[We did not fully colour-calibrate the images here (see Discussion) but future researchers may wish to do so.] 
 * These images were converted to JPEGs with a quality setting of 75 to reduce file size and enable interoperability across browsers and devices for stimulus display online.
-These processed images are available alongside the full set of RAW images in the image database.
+These processed images are available alongside the full set of images in the image database. The full set of RAW images were converted to 50% size and saved in high-quality JPEG format because the RAW file sizes exceeded the archive capacity.
   
 ```{r}
 #| label: fig-img-processing
@@ -529,13 +537,11 @@ knitr::include_graphics("fig/img-processing.png")
 The number of stimuli was determined by the number of models recruited across the 20 research labs and how many models posed for each image type. The maximum number of targets per image type was 205^[The preregistration mis-stated the total number of models, rather than the maximum number of images, to be 205. The total number of models was 211], meaning each rater saw up to 205 stimuli. We obtained ratings of the front-facing standardized neutral (n = 205), unstandardized neutral (n = 177), standardized angry (n = 187), standardized disgusted (n = 184), standardized fearful (n = 175), standardized happy (n = 199), standardized sad (n = 183), and standardized surprised (n = 184) images. Note that these numbers of stimuli are higher than the number of stimuli available in the database, as not all models consented to database inclusion.
 
 
-```{r eval=FALSE}
+```{r}
 #| label: fig-stim-examples
 #| fig-cap: An example of each type of stimulus, with the total number of stimuli of that type in parentheses.
 #| fig-cap-location: top
 #| fig-alt: "Example face images for the 8 types of stimuli: unstandardized neutral, standardized neutral, angry, disgusted, fearful, happy, sad, and surprised"
-
-# ***LISA: change labels in image to be grammatically consistent ***
 
 knitr::include_graphics("fig/stim-types.png")
 ```
@@ -1047,15 +1053,38 @@ This research was funded by a Biotechnology and Biological Sciences Research Cou
 With respect to the contributions of J. Brendan Ritchie, Maleah J. Carter, and Shruti Japee, this research was supported in part by the Intramural Research Program of the National Institutes of Health (NIH) (ZIAMH 002909). The contributions of the NIH authors are considered Works of the United States Government. The findings and conclusions presented in this paper are those of the authors and do not necessarily reflect the views of the NIH or the U.S. Department of Health and Human Services.
   
 ## CRediT statement
+
 Note that the first three authors led the current project, and the order of all other authors listed on the manuscript was randomized. Each author's contributions are noted via CRediT.
   
 ```{r}
 #| message: false
+#| label: tbl-credit
+#| tbl-cap: "CRediT table showing contributions to Conceptualization, Data curation, Formal analysis, Funding acquisition, Investigation, Methodology, Project administration, Resources, Software, Supervision, Validation, Visualization, Writing - original draft, and Writing - review & editing."
 
-read_csv("author_CRediT.csv") |>
+con_cat <- c(Conc = "Conceptualization", 
+             DaCu = "Data curation", 
+             FoAn = "Formal analysis", 
+             FuAc = "Funding acquisition", 
+             Inve = "Investigation",
+             Meth = "Methodology", 
+             PrAd = "Project administration", 
+             Reso = "Resources", 
+             Soft = "Software",
+             Supe = "Supervision", 
+             Vali = "Validation",
+             Visu = "Visualization", 
+             WrOD = "Writing - original draft", 
+             WrRE = "Writing - review & editing")
+
+credit <- read_csv("author_CRediT.csv") |>
   select("Name", "Contributions") |>
-  flextable() |>
-  flextable::width(j = 1, 3)
+  separate_longer_delim(Contributions, ", ") |>
+  mutate(Contributions = factor(Contributions, con_cat, names(con_cat))) |>
+  mutate(value = "✅") |>
+  pivot_wider(names_from = Contributions, values_fill = "✖️")
+
+flextable(credit) |>
+  flextable::width(j = 1, 6)
 ```
 
 

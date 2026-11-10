@@ -1,5 +1,6 @@
 #devtools::install_github("debruine/webmorphR@dev")
 library(webmorphR)
+library(tidyverse)
 
 # Model data
 ct <- cols(
@@ -8,8 +9,12 @@ ct <- cols(
   weight = col_integer(),
   ethnicity_rec = col_factor(levels = c("White", "Black", "Asian", "Indigenous", "MENA", "Latine", "Mixed", "Ambiguous label"), include_na = TRUE)
 )
-data_models <- read_csv("../data/manyfaces-pilot-models_cleaned.csv",
-                        col_types = ct)
+
+usable <- read_csv("data/target_use.csv")
+data_models <- read_csv("data/manyfaces-pilot-models_cleaned.csv",
+                        col_types = ct) |>
+  right_join(usable, by = c("lab_id", "model_id"))
+
 
 emo_levels <- c(
   neu = "neutral",
@@ -66,12 +71,12 @@ labels <- blank(length(emo_levels), raw_stim[[1]]$width, raw_stim[[1]]$width /
 std_labels <- blank(6, raw_stim[[1]]$height, raw_stim[[1]]$height / 3) |>
   label(
     c(
-      "Standardised\nFront",
-      "Standardised\nLeft 90",
-      "Standardised\nLeft 45",
-      "Standardised\nRight 45",
-      "Standardised\nRight 90",
-      "Unstandardised\nFront"
+      "Standardized\nFront",
+      "Standardized\nLeft 90",
+      "Standardized\nLeft 45",
+      "Standardized\nRight 45",
+      "Standardized\nRight 90",
+      "Unstandardized\nFront"
     ),
     size = 90,
     color = "black",
@@ -90,7 +95,8 @@ raw_plot <- plot_rows(
   c(std_labels[[6]], raw_stim[unstd_0])
 )
 
-write_stim(raw_plot, "fig", "img-examples", "png")
+write_stim(raw_plot, "fig", "img-examples", "png",
+           overwrite = TRUE)
 
 # fig-img-processing ----
 
@@ -104,7 +110,8 @@ img_proc <- c(std_neu_0$raw, align_tem, std_neu_0$wb) |>
         size = 100, location = "+20+20") |>
   plot_stim()
 
-write_stim(img_proc, "fig", "img-processing", "png")
+write_stim(img_proc, "fig", "img-processing", "png",
+           overwrite = TRUE)
 
 # fig_angles ----
 angle_labels <- c("Left 90", "Left 45", "Front", "Right 45", "Right 90")
@@ -112,15 +119,14 @@ stim_angle <- paste0("MF0006_0007_std_neu_", c("l90", "l45", "0", "r45", "r90"))
 fig_angle <- raw_stim[stim_angle] |>
   mlabel(angle_labels, "north-west", "+10+10") |>
   plot_stim(nrow = 1)
-write_stim(fig_angle, "fig", "angles", "png")
+write_stim(fig_angle, "fig", "angles", "png", overwrite = TRUE)
 
 # fig-stim-types ----
 wb_stim <- read_stim("images/wb/", "MF0006_0007_") |>
   resize(1000)
 
-n <- c(image_type_n$unstd[[1]], image_type_n$std)
-stim_type_labels <- c("unstandardised", emo_levels) |>
-  paste0(" (", n, ")")
+#n <- c(image_type_n$unstd[[1]], image_type_n$std)
+stim_type_labels <- c("unstandardized", emo_levels)
 
 stim <- sprintf("MF0006_0007_std_%s_0", names(emo_levels)) |>
   c("MF0006_0007_unstd_neu_0", x = _)
@@ -128,4 +134,4 @@ fig_stim_types <- wb_stim[stim] |>
   pad(150, 0, 0, 0) |>
   mlabel(stim_type_labels) |> # , "north-west", "+10+10") |>
   plot_stim(nrow = 1)
-write_stim(fig_stim_types, "fig", "stim-types", "png")
+write_stim(fig_stim_types, "fig", "stim-types", "png", overwrite = TRUE)

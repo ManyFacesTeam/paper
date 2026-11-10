@@ -12,7 +12,7 @@ format:
     df-print: paged
     toc: true
     toc-depth: 5
-    toc-expand: 4
+    toc-expand: 3
   # docx: default
   # jats: default
   # pdf: default
