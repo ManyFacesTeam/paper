@@ -6,16 +6,17 @@ manuscript:
   article: index.qmd
 
 format:
-  html:
-    comments:
-      hypothesis: true
-    df-print: paged
-    toc: true
-    toc-depth: 5
-    toc-expand: 3
+  # html:
+  #   # comments:
+  #   #   hypothesis: true
+  #   df-print: paged
+  #   toc: true
+  #   toc-depth: 5
+  #   toc-expand: 3
   # docx: default
   # jats: default
-  # pdf: default
+  pdf:
+    toc: true
 
 execute:
   freeze: false

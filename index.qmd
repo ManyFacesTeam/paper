@@ -396,6 +396,8 @@ model_n <- nrow(data_models)
 A total of 211 models provided their images for use in Phase 2, following exclusions for poor image quality (as determined by the researchers collecting the images and the core team) and two model withdrawals. Of these, `r model_n` consented to have their images shared in a database. @tbl-images-per-type details the number of models for each kind of photo available in the database. Example images are shown in @fig-img-examples. Images are freely available for research use and can be accessed via UK Data Service ReShare: [**LINK**]<!--LISA TO ADD LINK-->. Note that researchers must agree to our terms of use to access the database, in line with ethical constraints (see <https://doi.org/10.5281/zenodo.22707036>).
 
 
+::: {.landscape}
+
 ```{r}
 #| label: tbl-images-per-type
 #| tbl-cap: The number of images available for each image type.
@@ -430,8 +432,15 @@ image_type_n <- read_csv("data/manyfaces_manifest_raw.csv",
               values_from = n)
 
 image_type_n |>
-  flextable()
+  flextable() |>
+  width(j = 1, 1.4) |>
+  width(j = 2, 0.8)
 ```
+
+:::
+
+
+::: {.landscape}
 
 ```{r}
 #| label: fig-img-examples
@@ -442,6 +451,7 @@ image_type_n |>
 knitr::include_graphics("fig/img-examples.png")
 ```
 
+:::
 
 #### Model self-report
 
@@ -456,6 +466,9 @@ For data cleaning, we first downloaded and reshaped the raw data from Experiment
 For gender and race/ethnicity, words presented in languages other than English were recoded to be presented in English (e.g., “mulher” to “female”, “preta” to “Black”). Two members of the research team then classified self-described race/ethnicity into one of seven categories (checked by a third team member): “White” (n = `r eth_n$White`), “Black” (n = `r eth_n$Black`), “Asian” (n = `r eth_n$Asian`), “Indigenous” (n = `r eth_n$Indigenous`), “MENA” (Middle Eastern or North African; n = `r eth_n[["Middle Eastern or North African (MENA)"]]`), “Latine” (n = `r eth_n$Latine`), or “Mixed” (n = `r eth_n$Mixed`), where possible. Descriptions that could not be clearly sorted into these categories were given “Ambiguous label” (n = `r eth_n[["Ambiguous label"]]`) and non-entries were recoded as NA (n = `r eth_n[["NA"]]`). Note that the models’ original self-reported phrasing of their gender and race/ethnicity is available in the model self-report data file included with the image database.
   
 For height, we ensured all data were presented in centimeters, and for weight, we ensured that all data were presented in kilograms. Models could report height and weight in metric or imperial units, so we converted from imperial to metric where required. We also sanity-checked the reported units, assuming heights > 100 to be in centimeters and those < 100 to be in inches, and weights < 80 to be in kilograms. Any non-entries of height or weight for a model was recoded as NA. See @tbl-model-demog for descriptive statistics separated by gender, for models whose images are in the database. 
+
+
+::: {.landscape}
 
 ```{r}
 #| label: tbl-model-demog
@@ -497,11 +510,14 @@ data_models |>
                     weight_sd = "SD") |>
   colformat_char(j = 1) |>
   colformat_double(digits = 1) |>
-  flextable::width(j = 1, width = 1)
+  width(j = 1, width = 0.5) |>
+  width(j = 2:14, width = 0.4)
           
 ```
   
 *Note.* See @fig-model-age in SM for histograms.
+
+:::
 
 ## Phase 2: Validation/norming data
 
@@ -536,16 +552,18 @@ knitr::include_graphics("fig/img-processing.png")
 
 The number of stimuli was determined by the number of models recruited across the 20 research labs and how many models posed for each image type. The maximum number of targets per image type was 205^[The preregistration mis-stated the total number of models, rather than the maximum number of images, to be 205. The total number of models was 211], meaning each rater saw up to 205 stimuli. We obtained ratings of the front-facing standardized neutral (n = 205), unstandardized neutral (n = 177), standardized angry (n = 187), standardized disgusted (n = 184), standardized fearful (n = 175), standardized happy (n = 199), standardized sad (n = 183), and standardized surprised (n = 184) images. Note that these numbers of stimuli are higher than the number of stimuli available in the database, as not all models consented to database inclusion.
 
+::: {.landscape}
 
 ```{r}
 #| label: fig-stim-examples
-#| fig-cap: An example of each type of stimulus, with the total number of stimuli of that type in parentheses.
+#| fig-cap: An example of each type of stimulus.
 #| fig-cap-location: top
 #| fig-alt: "Example face images for the 8 types of stimuli: unstandardized neutral, standardized neutral, angry, disgusted, fearful, happy, sad, and surprised"
 
 knitr::include_graphics("fig/stim-types.png")
 ```
 
+:::
 
 #### Attention check stimuli
 
@@ -659,7 +677,7 @@ To further check inter-rater agreement, we used both Cronbach’s alpha (α) and
   
 #### Points of stability
 
-To determine the number of raters required for stable ratings, we computed the point of stability [@hehman_assessing_2025], defined as the smallest sample size at which 95% of resampled means fall within a corridor of stability of ±0.5 points and do not again exceed it.^[Note that we declared stability when the *upper* bound crossed inside the threshold, whereas Hehman and colleagues declare stability when the lower/nearer bound crosses inside the threshold.] As shown in @fig-pos, the ratings of standardized images reached stability between 37 and 44 raters, the ratings of unstandardized images between 37 and 42 raters, and emotion intensity ratings of standardized emotional faces between 29 and 50 raters.
+To determine the number of raters required for stable ratings, we computed the point of stability [@hehman_assessing_2025], defined as the smallest sample size at which 95% of resampled means fall within a corridor of stability of ±0.5 points and do not again exceed it.^[Note that we declared stability when the *upper* bound crossed inside the threshold, whereas Hehman and colleagues declare stability when the lower/nearer bound crosses inside the threshold.] As shown in @fig-pos, the ratings of standardized images reached stability between 36 and 45 raters, the ratings of unstandardized images between 37 and 41 raters, and emotion intensity ratings of standardized emotional faces between 29 and 50 raters.
 
 ```{r}
 #| label: fig-pos
@@ -1052,6 +1070,8 @@ We thank all of our participants, both models and raters, who made this research
 This research was funded by a Biotechnology and Biological Sciences Research Council International Partnerships Funding grant (320172; via University of Glasgow MVLS), awarded to Lisa DeBruine, Vít Třebický, and R. Thora Bjornsdottir, and a Czech Science Foundation grant (GAČR 23-05408S) awarded to Vít Třebický.
 With respect to the contributions of J. Brendan Ritchie, Maleah J. Carter, and Shruti Japee, this research was supported in part by the Intramural Research Program of the National Institutes of Health (NIH) (ZIAMH 002909). The contributions of the NIH authors are considered Works of the United States Government. The findings and conclusions presented in this paper are those of the authors and do not necessarily reflect the views of the NIH or the U.S. Department of Health and Human Services.
   
+  
+:::{.landscape}
 ## CRediT statement
 
 Note that the first three authors led the current project, and the order of all other authors listed on the manuscript was randomized. Each author's contributions are noted via CRediT.
@@ -1080,12 +1100,15 @@ credit <- read_csv("author_CRediT.csv") |>
   select("Name", "Contributions") |>
   separate_longer_delim(Contributions, ", ") |>
   mutate(Contributions = factor(Contributions, con_cat, names(con_cat))) |>
-  mutate(value = "✅") |>
-  pivot_wider(names_from = Contributions, values_fill = "✖️")
+  mutate(value = "X") |>
+  pivot_wider(names_from = Contributions, values_fill = "️.")|>
+  select(Name, any_of(names(con_cat)))
 
 flextable(credit) |>
-  flextable::width(j = 1, 6)
+  width(j = 1, 1.5) |>
+  width(j = 2:15, 0.4)
 ```
+:::
 
 
 ## Supplementary Material
@@ -1317,9 +1340,9 @@ data_quest_rename |>
 
 # join ICC, alpha, & omega values
 icc_a_o_table <- icc_table |>
-  mutate(`ICC\n[95% CI]` = 
-           paste(ICC, "\n[", lower, ", ", upper, "]", sep="")) |>
-  select(-c(ICC, lower, upper)) |>
+  mutate(`[95% CI]` = 
+           paste("[", lower, ", ", upper, "]", sep="")) |>
+  select(-c(lower, upper)) |>
   full_join(alpha_omega_table, by = c("Rating", "N")) |>
   mutate(alpha = round(alpha, 2),
          omega = round(omega, 2),
@@ -1340,8 +1363,11 @@ icc_a_o_table <- icc_table |>
 
 icc_a_o_table |>
   flextable() |>
-  flextable::width(j = 1, 1.5)
+  width(width = c(1.5, 0.2, 0.5, 1, 0.5, 0.5)) |>
+  align(j = 3, align = "right", part = "all")
 ```
+
+::: {.landscape}
 
 ```{r}
 #| label: tbl-emo-desc
@@ -1364,3 +1390,5 @@ emo_cat |>
   add_header_row(values = c("", "Categorized expression"), colwidths = c(1, 7)) |>
   align(i = 1, align = "center", part = "header")
 ```
+
+:::
